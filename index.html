@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <style>
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(144, 144, 144, 0.5); }
+        html, body, #app { margin: 0; padding: 0; height: 100%; width: 100%; }
+        body { background-color: black; overflow: hidden; }
+        .alertify .dialog, .alertify button, .alertify input, .alertify-logs { font-family: Arial, sans-serif; font-size: 12px!important; }
+        .alertify input { margin-bottom: 0!important; padding: 6px!important; outline:none; }
+        .alertify { z-index: 1000 }
+        .ace_gutter { z-index: initial!important; }
+        .lm_splitter.lm_horizontal .lm_drag_handle { left: 0!important; }
+        .log { width: 100%; height: 100%; color: white; font-family: monospace; overflow: auto; }
+        .log > ul { list-style: none; padding: 0; }
+        .inverted { filter: invert(20%); background-color: black; }
+    </style>
+</head>
+<body>
+
+    <div id="app"></div>
+
+    <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css" />
+    <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
+    <script src="bundle.js"></script>
+
+</body>
+</html>

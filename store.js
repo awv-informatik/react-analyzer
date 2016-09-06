@@ -5,9 +5,14 @@ import jsonpatch from 'fast-json-patch';
 import SocketIO from 'awv3/communication/socketio';
 import alertify from 'alertify.js';
 
+const SET_URL = 'SET_URL';
+const ADD_LOG = 'ADD_LOG';
+const SET_CONNECTED = 'SET_CONNECTED';
+const NOTIFY = 'NOTIFY';
+
 const settings = (state = {}, action) => {
     switch (action.type) {
-        case 'SET_URL':
+        case SET_URL:
             return { ...state, url: action.url };
         default:
             return state;
@@ -16,7 +21,7 @@ const settings = (state = {}, action) => {
 
 const log = (state = [], action) => {
     switch (action.type) {
-        case 'ADD_LOG':
+        case ADD_LOG:
             return [ ...state, action.object ];
         default:
             return state;
@@ -25,9 +30,9 @@ const log = (state = [], action) => {
 
 const status = (state = {}, action) => {
     switch (action.type) {
-        case 'SET_CONNECTED':
+        case SET_CONNECTED:
             return { ...state, connected: action.connected };
-        case 'NOTIFY':
+        case NOTIFY:
             return { ...state, message: action.message };
         default:
             return state;
@@ -37,7 +42,7 @@ const status = (state = {}, action) => {
 const localState = {
     status: {
         connected: false,
-        message: ".."
+        message: "..."
     },
     settings: {
         url: document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`,
@@ -71,10 +76,11 @@ try {
 
 // Expose store and actions
 export const store = createStore(combineReducers({ settings, log, status }), localState);
-export const setUrl = url => store.dispatch({ type: 'SET_URL', url });
-export const addLog = object => store.dispatch({ type: 'ADD_LOG', object });
-export const notify = message => store.dispatch({ type: 'NOTIFY', message });
-export const setConnected = connected => store.dispatch({ type: 'SET_CONNECTED', connected });
+
+export const setUrl = url => store.dispatch({ type: SET_URL, url });
+export const addLog = object => store.dispatch({ type: ADD_LOG, object });
+export const notify = message => store.dispatch({ type: NOTIFY, message });
+export const setConnected = connected => store.dispatch({ type: SET_CONNECTED, connected });
 
 class Analyzer extends SocketIO {
     constructor() {

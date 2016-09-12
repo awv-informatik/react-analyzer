@@ -1,11 +1,18 @@
 import React from 'react';
-import { connect } from 'react-redux'
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/tomorrow_night';
 import { v4 } from 'node-uuid';
 
 export default class Editor extends React.Component {
+    static propTypes = {
+        text: React.PropTypes.string
+    }
+
+    static defaultProps = {
+        text: ""
+    }
+
     componentDidMount() {
         this.props.glContainer && this.props.glContainer.on('resize', () => this.refs.ace.editor.resize());
     }
@@ -19,7 +26,7 @@ export default class Editor extends React.Component {
                 editorProps={{$blockScrolling: true}}
                 height="100%"
                 width="100%"
-                value={this.props.template}
+                value={this.props.text}
                 setOptions={{
                     hScrollBarAlwaysVisible: false,
                     vScrollBarAlwaysVisible: false,
@@ -34,9 +41,5 @@ export default class Editor extends React.Component {
                 }}
             />
         )
-    }
-
-    static connect() {
-        return connect(state => ({ template: state.settings.template }))(Editor);
     }
 }

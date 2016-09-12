@@ -8,6 +8,14 @@ export default class View extends React.Component {
         this.promise = new Promise(res => this.resolve = res);
     }
 
+    static propTypes = {
+        up: React.PropTypes.array
+    }
+
+    static defaultProps = {
+        up: [0, 0, 1]
+    }
+
     get interface () {
         return this.promise;
     }
@@ -33,12 +41,4 @@ export default class View extends React.Component {
             </div>
         );
     }
-}
-
-View.propTypes = {
-    up: React.PropTypes.array
-}
-
-View.defaultProps = {
-    up: [0, 0, 1]
 }

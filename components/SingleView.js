@@ -21,16 +21,8 @@ export default class SingleView extends React.Component {
     render() {
         return (
             <Canvas style={{ position: 'relative', height: '100%', width: '100%', ...this.props.style }}>
-                <View ref="view" up={ [...this.props.up] } />
+                <View ref="view" up={ [0, 1, 0] } />
             </Canvas>
         )
     }
-}
-
-SingleView.propTypes = {
-    up: React.PropTypes.array
-}
-
-SingleView.defaultProps = {
-    up: [0, 1, 0]
 }

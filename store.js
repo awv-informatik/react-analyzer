@@ -1,7 +1,10 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import jsonpatch from 'fast-json-patch';
+import { routerReducer as routing } from 'react-router-redux';
+
+import { apply as jsonPatch } from 'fast-json-patch';
+import cloneDeep from 'lodash/cloneDeep';
 import SocketIO from 'awv3/communication/socketio';
 import alertify from 'alertify.js';
 
@@ -9,6 +12,7 @@ const SET_URL = 'SET_URL';
 const ADD_LOG = 'ADD_LOG';
 const SET_CONNECTED = 'SET_CONNECTED';
 const NOTIFY = 'NOTIFY';
+const PATCH = 'PATCH';
 
 const settings = (state = {}, action) => {
     switch (action.type) {
@@ -22,11 +26,28 @@ const settings = (state = {}, action) => {
 const log = (state = [], action) => {
     switch (action.type) {
         case ADD_LOG:
+            //return [ ...state.slice(-200), action.object ];
             return [ ...state, action.object ];
         default:
             return state;
     }
 };
+
+const internal = (state = {}, action) => {
+    switch (action.type) {
+        case PATCH:
+            if (action.delta.patch) {
+                state = cloneDeep(state);
+                jsonPatch(state, action.delta.patch);
+            } else {
+                state = action.delta;
+            }
+            return state;
+
+        default:
+            return state;
+    }
+}
 
 const status = (state = {}, action) => {
     switch (action.type) {
@@ -46,23 +67,11 @@ const localState = {
     },
     settings: {
         url: document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`,
-        template: require("raw!./assets/template.txt"),
-        layout: [
-            {
-                type: 'row',
-                content: [
-                    { type:'react-component', title: 'View', component: 'SingleView' },
-                    {
-                        type: 'column',
-                        content: [
-                            { type:'react-component', title: 'Javascript Editor', component: 'Editor' },
-                            { type:'react-component', title: 'Interpreter Editor', component: 'Editor' },
-                            { type:'react-component', title: 'Log', component: 'Log' }
-                        ]
-                    }
-                ]
-            }
-        ]
+        templates: {
+            javascript: require("raw!./assets/template_js.txt"),
+            classcad: require("raw!./assets/template_cc.txt"),
+        },
+        layout: require("json!./assets/layout.json")
     }
 };
 
@@ -75,29 +84,36 @@ try {
 } catch(e) { /* ... */ }
 
 // Expose store and actions
-export const store = createStore(combineReducers({ settings, log, status }), localState);
+export const store = createStore(combineReducers({ settings, log, status, internal, routing }), localState);
 
-export const setUrl = url => store.dispatch({ type: SET_URL, url });
-export const addLog = object => store.dispatch({ type: ADD_LOG, object });
-export const notify = message => store.dispatch({ type: NOTIFY, message });
-export const setConnected = connected => store.dispatch({ type: SET_CONNECTED, connected });
+export const setUrl = url => ({ type: SET_URL, url });
+export const addLog = object => ({ type: ADD_LOG, object });
+export const notify = message => ({ type: NOTIFY, message });
+export const setConnected = connected => ({ type: SET_CONNECTED, connected });
+export const patch = delta => ({ type: PATCH, delta });
 
 class Analyzer extends SocketIO {
     constructor() {
         super({ debug: true, credentials: [] });
-        this.on('connected', socket => {
-            setConnected(true);
+        this.on('connected', (socket, data) => {
+            store.dispatch(patch(data.tree));
+            store.dispatch(setConnected(true));
             this.socket.on('debug', data => {
                 SocketIO._ack(this.socket);
 
-                switch(data.type) {
-                    case 'message':
-                        addLog(data);
-                }
+                requestIdleCallback(() => {
+                    switch(data.type) {
+                        case 'message':
+                            return store.dispatch(addLog(data));
+                        case 'patch':
+                            return store.dispatch(patch(data));
+                    }
+                });
+                
             });
         });
         this.on('disconnected', socket => {
-            setConnected(false);
+            store.dispatch(setConnected(false));
         });
     }
 }
@@ -105,13 +121,14 @@ class Analyzer extends SocketIO {
 let url = store.getState().settings.url;
 let analyzer = new Analyzer();
 analyzer.connect(url)
-    .then( _ => notify(`Connected to ${url}`))
+    .then( _ => store.dispatch(notify(`Connected to ${url}`)))
     .catch( reason => {
-        notify(`Could not connect to ${url}, reason: ${reason}`);
+        store.dispatch(notify(`Could not connect to ${url}, reason: ${reason}`));
         alertify.defaultValue(url).prompt("Enter server endpoint", val => {
-            url = setUrl(val).url;
+            store.dispatch(setUrl(val));
+            url = store.getState().settings.url;
             analyzer.connect(url)
-                .then( _ => notify(`Connected to ${url}`))
-                .catch( reason => notify(`Could not connect to ${url}, reason: ${reason}`));
+                .then( _ => store.dispatch(notify(`Connected to ${url}`)))
+                .catch( reason => store.dispatch(notify(`Could not connect to ${url}, reason: ${reason}`)));
         });
     });

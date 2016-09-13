@@ -16,10 +16,10 @@ let context = await connection.execute(`
 `)
 
 // Display models
-show(context.models)
+show(context)
 
 // Catch results
-results(context.results)
+results(context)
 
 // Disconnect
 connection.disconnect()

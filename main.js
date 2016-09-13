@@ -15,8 +15,6 @@ const LiveLog = connect(state => ({
     filter: state.settings.filter
 }))(Log);
 
-const LiveEditor = connect(state => ({ text: state.settings.templates.javascript }))(Editor);
-
 ReactDOM.render((
     <Provider store={store}>
         <Router history={syncHistoryWithStore(hashHistory, store)}>
@@ -24,7 +22,7 @@ ReactDOM.render((
                 <IndexRoute component={Overview} />
                 <Route path="/overview" component={Overview} />
                 <Route path="/log" component={LiveLog} />
-                <Route path="/editor" component={LiveEditor} />
+                <Route path="/editor" component={Editor} />
             </Route>
         </Router>
     </Provider>

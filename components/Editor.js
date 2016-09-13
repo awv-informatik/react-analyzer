@@ -1,10 +1,12 @@
 import React from 'react';
+import { animateScroll, Link } from 'react-scroll';
+import { connect } from 'react-redux';
+import { store } from '../store';
+
+import JSONTree from 'react-json-tree'
 import AceEditor from 'react-ace';
 import 'brace/mode/jsx';
 import 'brace/theme/xcode';
-import { animateScroll, Link } from 'react-scroll';
-
-import { store } from '../store';
 
 import Presentation from '../assets/presentation';
 import Object3 from 'awv3/three/object3';
@@ -13,21 +15,23 @@ import Rest from 'awv3/communication/rest';
 
 import Canvas from '../components/Canvas';
 import View from '../components/View';
-import JSONTree from 'react-json-tree'
 
+@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText }))
 export default class Editor extends React.Component {
     static propTypes = {
-        text: React.PropTypes.string
+        text: React.PropTypes.string,
+        template: React.PropTypes.string
     }
 
     static defaultProps = {
-        text: ""
+        text: "",
+        template: ""
     }
 
     constructor() {
         super();
         this.state = {
-            target: "view",
+            top: true,
             editorLabel: "Press [ CTRL - S ] to compile",
             editorLabelIcon: "large info icon",
             editorLabelBg: "#64a8db",
@@ -37,9 +41,13 @@ export default class Editor extends React.Component {
         };
     }
 
-    toggle = () => {
-        this.setState({ target: this.state.target === "view" ? "top" : "view" });
-        this.refs.icon.classList.toggle('rotate');
+    toggle = (top = !this.state.top) => {
+        console.log(top)
+        this.setState({ top });
+        if (top)
+            animateScroll.scrollToTop({ containerId: 'container' });
+        else
+            animateScroll.scrollToBottom({ containerId: 'container' });
     }
 
     toggleResults = () => {
@@ -58,6 +66,7 @@ export default class Editor extends React.Component {
 
                 // Get code from editor and compile using eval
                 let value = this.refs.ace.editor.getValue();
+                this.props.dispatch({ type: "SET_EDITOR_TEXT", editorText: value });
 
                 if (typeof Babel !== 'undefined') {
                     // Babel is available, let's translate the code
@@ -75,9 +84,7 @@ export default class Editor extends React.Component {
                 });
 
                 timeout = setTimeout(() => {
-                    this.toggle();
                     this.view.canvas.renderer.resize();
-                    animateScroll.scrollToBottom({ containerId: 'container' });
                     setTimeout(() => this.setState({ editorLabelBg: "#64a8db", editorError: false }), 1000);
                 }, 500);
 
@@ -118,17 +125,17 @@ export default class Editor extends React.Component {
             this.setState({ results: [] });
         };
 
-        window.show = (models) => {
+        window.show = ({ models }) => {
             window.presenter.add(models);
-            window.view.controls.focus().zoom();
+            window.view.updateBounds().controls.focus().zoom().rotateTheta(Math.PI / 2);
+            this.toggle(false);
         };
 
-        window.results = (results) => {
-
+        window.results = ({ results }) => {
             if (!Array.isArray(results))
                 results = [results];
-
             this.setState({ results: results.map(item => item.result) });
+            this.toggle(false);
         }
 
         window.canvas = view.canvas;
@@ -147,6 +154,9 @@ export default class Editor extends React.Component {
     }
 
     render() {
+
+        let text = this.props.text || this.props.template;
+
         return (
             <div id="container" style={{ position: 'absolute',  width: '100%', height: '100%', overflow: 'hidden' }}>
 
@@ -157,13 +167,13 @@ export default class Editor extends React.Component {
                         <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
                             <AceEditor
                                 ref="ace"
-                                name={"ace"}
+                                name="ace"
                                 mode="jsx"
                                 theme="xcode"
-                                editorProps={{$blockScrolling: true}}
+                                editorProps={{ $blockScrolling: true }}
                                 height="100%"
                                 width="100%"
-                                value={this.props.text}
+                                value={ text }
                                 setOptions={{
                                     hScrollBarAlwaysVisible: false,
                                     vScrollBarAlwaysVisible: false,
@@ -177,7 +187,7 @@ export default class Editor extends React.Component {
                                     maxLines: Infinity
                                 }}
                             />
-                            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 50, height: this.state.editorError ? 200 : 40, backgroundColor: this.state.editorLabelBg, fontSize: 14, fontWeight: 'bold', color: 'white', transition: 'background-color, height 1s', borderTop: '1px #b5b5b5 solid', whiteSpace: 'pre', fontFamily: 'monospace' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 50, height: this.state.editorError ? 200 : 40, backgroundColor: this.state.editorLabelBg, fontSize: 14, fontWeight: 'bold', color: 'white', transition: 'background-color, height .5s', borderTop: '1px #b5b5b5 solid', whiteSpace: 'pre', fontFamily: 'monospace' }}>
                                 <i className={this.state.editorLabelIcon} />
                                 <span style={{ marginLeft: 10 }}>{this.state.editorLabel}</span>
                             </div>
@@ -199,7 +209,7 @@ export default class Editor extends React.Component {
                                     color: 'white', transition: 'background-color 1s', cursor: 'pointer',
                                     borderTop: '1px #b5b5b5 solid', backgroundColor: this.state.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggleResults}>
 
-                                    <i className={`large ${this.state.resultsUp ? 'rotate' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
+                                    <i className={`large ${this.state.resultsUp ? 'headsup' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
                                     <span style={{ marginLeft: 10 }}>Results</span>
 
                                 </div>
@@ -215,9 +225,9 @@ export default class Editor extends React.Component {
                 </div>
 
                 <sidebar style={{ position: 'fixed', top: 74, right: 40, color: 'white', cursor: 'pointer' }}>
-                    <Link to={this.state.target} containerId="container" smooth={true} duration={500} onClick={this.toggle}>
-                        <i ref="icon" className="big link chevron down icon" style={{ transition: 'transform .2s'}} />
-                    </Link>
+                    <i ref="icon"
+                        className={`${this.state.top ? '' : 'headsup'} big blue link chevron down icon`}
+                        style={{ transition: 'transform .2s'}} onClick={() => this.toggle()} />
                 </sidebar>
 
             </div>

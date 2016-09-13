@@ -10,6 +10,7 @@ import alertify from 'alertify.js';
 
 const SET_URL = 'SET_URL';
 const SET_FILTER = 'SET_FILTER';
+const SET_EDITOR_TEXT = 'SET_EDITOR_TEXT';
 const ADD_LOG = 'ADD_LOG';
 const SET_CONNECTED = 'SET_CONNECTED';
 const NOTIFY = 'NOTIFY';
@@ -21,6 +22,8 @@ const settings = (state = {}, action) => {
             return { ...state, url: action.url };
         case SET_FILTER:
             return { ...state, filter: action.filter };
+        case SET_EDITOR_TEXT:
+            return { ...state, editorText: action.editorText };
         default:
             return state;
     }
@@ -84,7 +87,8 @@ const localState = {
             classcad: require("raw!./assets/template_cc.txt"),
         },
         layout: require("json!./assets/layout.json"),
-        filter: ""
+        filter: "",
+        editorText: ""
     }
 };
 
@@ -100,6 +104,7 @@ try {
 export const store = createStore(combineReducers({ settings, log, status, internal, routing }), localState);
 
 export const setUrl = url => ({ type: SET_URL, url });
+export const setEditorText = editorText => ({ type: SET_EDITOR_TEXT, editorText });
 export const addLog = object => ({ type: ADD_LOG, object });
 export const notify = message => ({ type: NOTIFY, message });
 export const setConnected = connected => ({ type: SET_CONNECTED, connected });

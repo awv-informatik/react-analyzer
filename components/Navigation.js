@@ -106,7 +106,9 @@ export default class extends React.Component{
 
                     </nav>
 
-                    <section style={{ position: 'relative', flex: 1, height: '100%', width: '100%', marginLeft: 100 }}>
+                    <aside style={{ width: 100 }} />
+
+                    <section style={{ position: 'relative', flex: 1, height: '100%', width: '100%' }}>
 
                         <RouteTransition
                             style={{ height: '100%', width: '100%' }}

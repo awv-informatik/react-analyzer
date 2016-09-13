@@ -9,6 +9,7 @@ import SocketIO from 'awv3/communication/socketio';
 import alertify from 'alertify.js';
 
 const SET_URL = 'SET_URL';
+const SET_FILTER = 'SET_FILTER';
 const ADD_LOG = 'ADD_LOG';
 const SET_CONNECTED = 'SET_CONNECTED';
 const NOTIFY = 'NOTIFY';
@@ -18,16 +19,27 @@ const settings = (state = {}, action) => {
     switch (action.type) {
         case SET_URL:
             return { ...state, url: action.url };
+        case SET_FILTER:
+            return { ...state, filter: action.filter };
         default:
             return state;
     }
 };
 
+let count = 0;
 const log = (state = [], action) => {
     switch (action.type) {
         case ADD_LOG:
+
+            if (action.object.message.indexOf("\n") > 0) {
+                let items = action.object.message.split("\n")
+                    .filter(item => item.trim().length > 0 && !item.startsWith('Execute'))
+                    .map(item => ({ ...action.object, message: item, count: count++ }));
+                return [ ...state, ...items ];
+            }
+
             //return [ ...state.slice(-200), action.object ];
-            return [ ...state, action.object ];
+            return [ ...state, { ...action.object, count: count++ } ];
         default:
             return state;
     }
@@ -71,7 +83,8 @@ const localState = {
             javascript: require("raw!./assets/template_js.txt"),
             classcad: require("raw!./assets/template_cc.txt"),
         },
-        layout: require("json!./assets/layout.json")
+        layout: require("json!./assets/layout.json"),
+        filter: ""
     }
 };
 
@@ -95,21 +108,32 @@ export const patch = delta => ({ type: PATCH, delta });
 class Analyzer extends SocketIO {
     constructor() {
         super({ debug: true, credentials: [] });
+
+        this.tasks = [];
+
         this.on('connected', (socket, data) => {
             store.dispatch(patch(data.tree));
             store.dispatch(setConnected(true));
             this.socket.on('debug', data => {
                 SocketIO._ack(this.socket);
 
-                requestIdleCallback(() => {
-                    switch(data.type) {
-                        case 'message':
-                            return store.dispatch(addLog(data));
-                        case 'patch':
-                            return store.dispatch(patch(data));
-                    }
+                switch(data.type) {
+                    case 'message':
+                        this.tasks.push(addLog(data));
+                        break;
+                    case 'patch':
+                        this.tasks.push(patch(data));
+                        break;
+                }
+
+                // Drain actions
+                this.frame && cancelIdleCallback(this.frame);
+                this.frame = requestIdleCallback(() => {
+                    this.frame = undefined;
+                    this.tasks.forEach(task => store.dispatch(task));
+                    this.tasks = [];
                 });
-                
+
             });
         });
         this.on('disconnected', socket => {
@@ -121,14 +145,14 @@ class Analyzer extends SocketIO {
 let url = store.getState().settings.url;
 let analyzer = new Analyzer();
 analyzer.connect(url)
-    .then( _ => store.dispatch(notify(`Connected to ${url}`)))
+    .then( _ => store.dispatch(notify(url)))
     .catch( reason => {
-        store.dispatch(notify(`Could not connect to ${url}, reason: ${reason}`));
+        store.dispatch(notify(reason.message));
         alertify.defaultValue(url).prompt("Enter server endpoint", val => {
             store.dispatch(setUrl(val));
             url = store.getState().settings.url;
             analyzer.connect(url)
-                .then( _ => store.dispatch(notify(`Connected to ${url}`)))
-                .catch( reason => store.dispatch(notify(`Could not connect to ${url}, reason: ${reason}`)));
+                .then( _ => store.dispatch(notify(url)))
+                .catch( reason => store.dispatch(notify(reason.message)));
         });
     });

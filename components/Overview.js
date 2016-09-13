@@ -11,23 +11,19 @@ const SessionStat = connect(state => ({ source: state.internal.sessions}))(Stat)
 const UserStat = connect(state => ({ source: state.internal.users }))(Stat);
 const QueueStat = connect(state => ({ source: state.internal.queue }))(Stat);
 const LiveLog = connect(state => ({ lines: state.log }))(Log);
-const LiveLoad = connect(state => ({
-    queue: state.internal.queue,
-    users: state.internal.users,
-    sessions: state.internal.sessions,
-    analyzers: state.internal.analyzers
-}))(Load);
 
 @connect(state => ({ status: state.status }))
-export default class App extends React.Component {
+export default class Overview extends React.Component {
 
     render() {
         return (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', paddingBottom: 100 }}>
-                    <LiveLoad />
+            <div style={{ position: 'absolute', marginTop: 74, display: 'flex', flexDirection: 'column', ...this.props.styles }}>
+                <div style={{ display: 'flex', paddingBottom: 100, color: 'white' }}>
 
-                    <ul style={{ listStyle: 'none', marginLeft: 120, borderLeft: '4px #E53935 solid' }}>
+                    <Load size={200} style={{ marginRight: 50 }} />
+                    <Load size={200} calc={(sessions, users, queue) => queue / sessions} />
+
+                    <ul style={{ listStyle: 'none', marginLeft: 100, borderLeft: '4px #efefef solid' }}>
                         <li><SessionStat name="Sessions" label="running" /></li>
                         <li><UserStat name="Users" label="active" /></li>
                         <li><QueueStat name="Tasks" label="queued"/></li>

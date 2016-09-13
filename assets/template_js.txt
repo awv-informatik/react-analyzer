@@ -32,7 +32,7 @@ Promise.all(tasks).then( () => log.stop("Tasks completed!"));
 function addModels(context, descr = "") {
     log.printResults(descr);
     log.printResults(context.results);
-    let object = new Object3(context.models);
+    let object = new Presentation(context.models);
     view.scene.add(object);
     view.updateBounds().controls.zoom().focus();
 }

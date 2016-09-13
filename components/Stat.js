@@ -18,7 +18,7 @@ export default class Status extends React.Component {
                 label={this.props.label}
                 unit={this.props.name}
                 value={this.props.source.length}
-                style={{ color: 'white', paddingBottom: 15 }}
+                style={{ color: '#8c8c8c', paddingBottom: 15 }}
             />
         );
     }

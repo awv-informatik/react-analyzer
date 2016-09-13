@@ -1,31 +1,27 @@
 import React from 'react';
 import { Canvas as CanvasImpl } from 'awv3';
 
+// Keep global reference
+let canvas = new CanvasImpl();
+
 export default class Canvas extends React.Component {
     constructor() {
         super();
-        this.promise = new Promise(res => this.resolve = res);
+        this.canvasImpl = canvas;
     }
 
     get interface () {
-        return this.promise;
+        return this.canvasImpl;
     }
 
     componentDidMount() {
-        this.canvasImpl = new CanvasImpl({ dom: this.refs.canvas });
-        this.resolve(this.canvasImpl);
+
+        this.canvasImpl.dom.style.position = 'absolute';
+        this.refs.canvas.insertBefore(this.canvasImpl.dom, this.refs.canvas.firstChild);
+        //this.refs.canvas.appendChild(this.canvasImpl.dom);
+        setTimeout(() => this.canvasImpl.renderer.resize(), 200);
     }
 
-    componentWillUnmount() {
-        if (this.canvasImpl) {
-            this.canvasImpl.destroy();
-            delete this.canvasImpl;
-        }
-    }
-
-    // todo: context for canvas
-    // componentdimount render children into target
-    // remove promises
     render() {
         return (
             <div ref="canvas" style={{ height: '100%', width: '100%', overflow: 'hidden', ...this.props.style }}>

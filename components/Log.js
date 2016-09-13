@@ -1,125 +1,93 @@
 import React from 'react';
 import { v4 } from 'node-uuid';
 import { connect } from 'react-redux';
+import { AutoSizer, VirtualScroll } from 'react-virtualized';
 
-const Input = ({ style, filter, onValueChanged }) => (
-    <input type="text" value={filter} onChange={e => onValueChanged(e.target.value)} style={{ ...style }}/>
-);
-
-const HeaderTable = ({ style, className }) => (
-    <table className={className} style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse', ...style }}>
-        <thead>
-            <tr>
-                <th style={{ width: 65, textAlign: 'left' }}>ClassCAD</th>
-                <th style={{ width: 65, textAlign: 'left' }}>User</th>
-                <th style={{ width: 30, textAlign: 'left' }}>Key</th>
-                <th style={{ textAlign: 'left' }}>Message</th>
-                <th style={{ width: 60, textAlign: 'right', paddingRight: 14 }}>Delta</th>
-            </tr>
-        </thead>
-    </table>
-);
-
-const ItemLine = ({ classes, sign, classcad, user, message, diff, onItemClicked, wrap }) => (
-    <tr style={{ verticalAlign: 'baseline' }}
+export const FlatItemLine = ({ index, classes, sign, classcad, user, message, diff, onItemClicked, wrap }) => (
+    <div style={{ display: 'flex', ...( index === 0 ? { alignItems: 'flex-end', height: '100%' } : {} ) }}
         className={sign === '>>>' ? 'inverted' : ''}>
 
-        <td onClick={e => onItemClicked(e.target.innerHTML)}
+        <span onClick={e => onItemClicked(e.target.textContent)}
             className={`classcad color-${classcad.color}-600`}
-            style={{ width: 65 }}>
-            {classcad.key}
-        </td>
-        <td onClick={e => onItemClicked(e.target.innerHTML)}
+            style={{ minWidth: 95, marginRight: 5 }}>
+            CCD{classcad.key}
+        </span>
+        <span onClick={e => onItemClicked(e.target.textContent)}
             className={`user color-${user.color}-600`}
-            style={{ width: 65 }}>
-            {user.key.substring(0, 8)}
-        </td>
-        <td onClick={e => onItemClicked(e.target.innerHTML)}
+            style={{ minWidth: 95, marginRight: 5 }}>
+            USR{user.key.substring(0, 8)}
+        </span>
+        <span onClick={e => onItemClicked(e.target.textContent)}
             className="sign"
-            style={{ width: 30 }}>
+            style={{ minWidth: 30, marginRight: 5 }}>
             {sign}
-        </td>
-        <td className="message" style={wrap ? { overflow: 'hidden', textOverflow: 'ellipsis' } : {}}>
-            <span onClick={e => onItemClicked(e.target.innerHTML)}
-                className={`${classes} color-${user.color}-600`}
+        </span>
+        <span className="message" style={wrap ? { overflow: 'hidden' } : {}}>
+            <span onClick={e => onItemClicked(e.target.textContent)}
+                className={`${classes}`}
                 style={wrap ? { whiteSpace: 'nowrap' } : {} }>
                 {message}
             </span>
-        </td>
-        <td style={{
-            width: 60,
+        </span>
+        <span style={{
+            flex: 1,
+            minWidth: 60,
+            marginLeft: 5,
             textAlign: (diff ? 'right' : 'initial')}}>
             {diff ? `+${diff}ms` : ''}
-        </td>
-    </tr>
-);
-
-const ItemTable = ({ wrap, lines, onItemClicked }) => (
-    <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }}>
-        <tbody>
-            {lines.map(item => <ItemLine wrap={wrap} {...item} onItemClicked={onItemClicked} key={v4()} />)}
-        </tbody>
-    </table>
+        </span>
+    </div>
 );
 
 export default class Log extends React.Component {
     static propTypes = {
         lines: React.PropTypes.array,
-        wrap: React.PropTypes.bool
+        wrap: React.PropTypes.bool,
+        filter: React.PropTypes.string
     }
 
     static defaultProps = {
         lines: [],
-        wrap: false
+        wrap: false,
+        filter: ""
     }
 
-    constructor() {
-        super();
-
-        this.state = {
-            filter: ""
-        };
-    }
-
-    setFilter = (value) =>
-        this.setState({ filter: value });
-
-    /*componentDidUpdate(prevProps) {
-        let height = this.refs.scoller.scrollHeight;
-        let factor = this.refs.scoller.scrollTop / height;
-        console.log(this.refs.scoller.scrollTop, height, factor)
-        if (factor > 0.95 && factor < 1.5)
-            this.refs.scoller.scrollTop = this.refs.scoller.scrollHeight;
-    }*/
-
-    componentDidMount() {
-        console.log("mount")
-    }
-
-    componentWillUnmount() {
-        console.log("unmount")
-    }
+    setFilter = (filter) =>
+        this.props.dispatch({ type: 'SET_FILTER', filter });
 
     render() {
 
-        let lines = this.props.lines;
+        this.items = this.props.lines;
 
         // Filter props
-        if (this.state.filter.length > 0) {
-            let filter = new RegExp(this.state.filter, "i");
-            lines = this.props.lines.filter(item => (
+        if (this.props.filter.length > 0) {
+            let filter = new RegExp(this.props.filter, "i");
+            this.items = this.props.lines.filter(item => (
                filter.test(item.message) ||
-               filter.test(item.user.key) ||
-               filter.test(item.classcad.key)
+               filter.test("USR" + item.user.key) ||
+               filter.test("CCD" + item.classcad.key)
            ));
         }
 
         return (
-            <div className="log" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <ItemTable wrap={this.props.wrap} lines={lines} onItemClicked={this.setFilter} />
+            <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
+                <AutoSizer>
+                    {({ width, height }) => (
+                        <VirtualScroll
+                            style={{ position: 'relative', overflowY: 'auto', overflowX: 'hidden', outline: 'none' }}
+                            rowStyle={{ position: 'absolute' }}
+                            className="log"
+                            width={width}
+                            height={height}
+                            rowCount={this.items.length}
+                            rowHeight={ ({ index }) => index === 0 ? 93.5 : 19.5 }
+                            rowRenderer={({ index, isScrolling }) =>
+                                <FlatItemLine key={index} index={index} wrap={true} {...this.items[index]} onItemClicked={this.setFilter} /> }
+                            noRowsRenderer={() => <div className="log" style={{ paddingTop: 74 }}>No logs received ...</div>}
+                        />
+                    )}
+                </AutoSizer>
             </div>
         );
     }
 }
-/*<HeaderTable className="log" style={{marginRight: 14}} />*/
-//<Input filter={this.state.filter} onValueChanged={this.setFilter} style={{margin: 10}} />

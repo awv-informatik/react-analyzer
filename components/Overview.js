@@ -17,13 +17,13 @@ export default class Overview extends React.Component {
 
     render() {
         return (
-            <div style={{ position: 'absolute', marginTop: 74, display: 'flex', flexDirection: 'column', ...this.props.styles }}>
-                <div style={{ display: 'flex', paddingBottom: 100, color: 'white' }}>
+            <div style={{ position: 'absolute', marginTop: 74, display: 'flex', flexDirection: 'column', height: '100%', ...this.props.styles }}>
+                <div style={{ display: 'flex', paddingBottom: 174, color: 'white', height: '100%' }}>
 
                     <Load size={200} style={{ marginRight: 50 }} />
                     <Load size={200} calc={(sessions, users, queue) => queue / sessions} />
 
-                    <ul style={{ listStyle: 'none', marginLeft: 100, borderLeft: '4px #efefef solid' }}>
+                    <ul style={{ listStyle: 'none', marginLeft: 100, borderLeft: '4px #efefef solid', height: '100%' }}>
                         <li><SessionStat name="Sessions" label="running" /></li>
                         <li><UserStat name="Users" label="active" /></li>
                         <li><QueueStat name="Tasks" label="queued"/></li>

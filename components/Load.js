@@ -2,7 +2,7 @@ import React from 'react';
 import Donut from 'rebass/dist/Donut';
 import { connect } from 'react-redux';
 
-const states = ['green', 'yellow', 'orange', '#E53935', '#D81B60'];
+const states = ['green', 'orange', 'red', '#E53935', '#D81B60'];
 
 @connect(state => ({
     queue: state.internal.queue,

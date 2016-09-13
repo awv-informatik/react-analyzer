@@ -1,38 +1,25 @@
-// 'url', default URL, depends on the analyzer running online or local
-// 'Canvas', 'View', 'SocketIO', 'Rest' & 'Object3' from AWV3-next
-// 'log' (.start(), .stop(message) & .printResults(string || object))
+// Pre-defined: clear(), show(), results(), url, view, SocketIO, Rest, Object3, Presentation
 
-log.start();
+// Connect
+let protocol = new SocketIO()
+let connection = await protocol.connect(url)
 
-let tasks = [];
-let task = new SocketIO().connect(url).then(connection => {
+// Reset scene
+clear()
 
-    // Clear scene
-    view.scene.destroy();
+// Execute tasks
+let context = await connection.execute(`
+    // Init tooldesigner and load tool
+    _C.ToolDesigner3d.InitApplication("Drawings/3dToolDesigner/3dToolDesigner.of1");
+    _O.ToolDesigner3d.LoadExistingTool("Drawings/ISO_Tool/Demo_Tool.of1");
+    RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");
+`)
 
-    // Execute tasks and disconnect
-    return connection.execute(`
+// Display models
+show(context.models)
 
-// Init tooldesigner and load tool
-_C.ToolDesigner3d.InitApplication("Drawings/3dToolDesigner/3dToolDesigner.of1");
-_O.ToolDesigner3d.LoadExistingTool("Drawings/ISO_Tool/Demo_Tool.of1");
-RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");
+// Catch results
+results(context.results)
 
-    `)
-    .then( context => addModels(context, "1st task"))
-    .then( () => connection.execute(`RETURN CADH_JSONTreeExportStr(_O.Demo_Tool);`))
-    .then( context => addModels(context, "2nd task"))
-    .then( () => connection.disconnect());
-});
-
-tasks.push(task);
-
-Promise.all(tasks).then( () => log.stop("Tasks completed!"));
-
-function addModels(context, descr = "") {
-    log.printResults(descr);
-    log.printResults(context.results);
-    let object = new Presentation(context.models);
-    view.scene.add(object);
-    view.updateBounds().controls.zoom().focus();
-}
+// Disconnect
+connection.disconnect()

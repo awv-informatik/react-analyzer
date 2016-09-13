@@ -41,6 +41,7 @@
   "dependencies": {
     "alertify.js": "^1.0.12",
     "awv3": "^1.0.88",
+    "babel-standalone": "^6.15.0",
     "brace": "^0.8.0",
     "fast-json-patch": "^1.0.0",
     "lodash": "^4.15.0",
@@ -50,6 +51,7 @@
     "react-addons-css-transition-group": "^15.3.1",
     "react-addons-shallow-compare": "^15.3.1",
     "react-dom": "^15.3.1",
+    "react-json-tree": "^0.10.0",
     "react-lite": "^0.15.17",
     "react-redux": "^4.4.5",
     "react-router-redux": "^4.0.5",

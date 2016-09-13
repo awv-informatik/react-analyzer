@@ -87,7 +87,7 @@ export default class extends React.Component{
                         <div style={{ position: 'fixed', top: 120 }}>
 
                             <h1 style={{ position: 'absolute', top: -50, color: '#64a8db', fontSize: 30, fontWeight: 600 }}>
-                                <i className="cube icon"></i>AWV<span style={{ color: '#51586a' }}>NODE</span>
+                                <i className="cube icon"></i>AWV<span style={{ color: '#dfdfdf' }}>NODE</span>
                             </h1>
 
                             <div className="ui icon input" style={{ marginBottom: 20 }}>

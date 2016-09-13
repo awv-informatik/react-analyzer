@@ -28,20 +28,10 @@ export default class Presentation extends Object3 {
         };
 
         this._objects = new Object3();
-        this._stage = new Object3();
-        this._stage.interactive = false;
-        this._stage.tweens = false;
-        this._lights = new Object3();
-        this._lights.interactive = false;
-        this._lights.tweens = false;
-
-        super.add(this._stage);
-        super.add(this._lights);
         super.add(this._objects);
 
         if (models && models.length > 0) {
             this.add(models);
-            this.update();
         }
     }
 
@@ -121,11 +111,24 @@ export default class Presentation extends Object3 {
                 }
             }
         });
+
+        this.update();
     }
 
     update() {
 
         this.viewFound().then( () => {
+
+            this._lights && this._lights.destroy();
+            this._stage && this._stage.destroy();
+
+            this._stage = new Object3();
+            super.add(this._stage);
+
+            this._lights = new Object3();
+            this._lights.interactive = false;
+            this._lights.tweens = false;
+            super.add(this._lights);
 
             this._objects.updateBounds();
             var min = this._objects.bounds.box.min;
@@ -162,7 +165,6 @@ export default class Presentation extends Object3 {
             spotLight.shadow.mapSize.height = 2048;
             this._lights.add( spotLight );
 
-            console.log(width, depth)
             var shadowGeo = new THREE.PlaneBufferGeometry( width * 1.2, depth * 1.2, 1, 1 );
             var mesh = new THREE.Mesh( shadowGeo, shadowMaterial )
             this._stage.add( mesh );

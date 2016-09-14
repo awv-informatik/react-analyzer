@@ -4,7 +4,7 @@ const production = process.env.NODE_ENV === 'production';
 module.exports = {
     entry: {
         site: "./index.js",
-        styles: "./style.styl"
+        styles: "./assets/style.styl"
     },
     output: {
         publicPath: '/',

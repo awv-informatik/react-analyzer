@@ -100,7 +100,7 @@ const localState = {
     settings: {
         url: document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`,
         templates: {
-            javascript: require("raw!../assets/template.txt")
+            javascript: require("raw!./assets/template.txt")
         },
         filter: "",
         editorText: ""

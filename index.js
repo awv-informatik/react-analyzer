@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux'
 import { Provider, connect } from 'react-redux'
-import { store } from './assets/store';
+import { store } from './store';
 
 import App from './containers/App';
 import Overview from './containers/Overview';

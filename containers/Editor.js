@@ -1,7 +1,6 @@
 import React from 'react';
 import { animateScroll, Link } from 'react-scroll';
 import { connect } from 'react-redux';
-import { store } from '../store';
 
 import JSONTree from 'react-json-tree'
 import AceEditor from 'react-ace';
@@ -16,7 +15,7 @@ import Rest from 'awv3/communication/rest';
 import Canvas from '../components/Canvas';
 import View from '../components/View';
 
-@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText }))
+@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText, url: state.settings.url }))
 export default class Editor extends React.Component {
     static propTypes = {
         text: React.PropTypes.string,
@@ -130,10 +129,19 @@ export default class Editor extends React.Component {
             this.toggle(false);
         };
 
-        window.results = ({ results }) => {
-            if (!Array.isArray(results))
-                results = [results];
-            this.setState({ results: results.map(item => item.result) });
+        window.results = (context) => {
+            if (Array.isArray(context) && context.length === 1)
+                context = context[0]
+            if (context.results) {
+                context = context.results.map(item => item.result);
+                if (context.length === 1)
+                    context = context[0]
+            } else if (context.command === 'Result') {
+                context = context.result;
+            }
+            if (!Array.isArray(context) || typeof context !== 'object')
+                context = [context];
+            this.setState({ results: context });
             this.toggle(false);
         }
 
@@ -144,7 +152,7 @@ export default class Editor extends React.Component {
             stop: () => console.log("stop"),
             printResults: () => console.log("printResults")
         }
-        window.url = store.getState().settings.url;
+        window.url = this.props.url;
 
     }
 

@@ -5,13 +5,14 @@ import { routerReducer as routing } from 'react-router-redux';
 
 import { apply as jsonPatch } from 'fast-json-patch';
 import cloneDeep from 'lodash/cloneDeep';
+import throttle from 'lodash/throttle';
 import SocketIO from 'awv3/communication/socketio';
-import alertify from 'alertify.js';
 
 const SET_URL = 'SET_URL';
 const SET_FILTER = 'SET_FILTER';
 const SET_EDITOR_TEXT = 'SET_EDITOR_TEXT';
 const ADD_LOG = 'ADD_LOG';
+const ADD_LOGS = 'ADD_LOGS';
 const SET_CONNECTED = 'SET_CONNECTED';
 const NOTIFY = 'NOTIFY';
 const PATCH = 'PATCH';
@@ -29,20 +30,12 @@ const settings = (state = {}, action) => {
     }
 };
 
-let count = 0;
 const log = (state = [], action) => {
     switch (action.type) {
         case ADD_LOG:
-
-            if (action.object.message.indexOf("\n") > 0) {
-                let items = action.object.message.split("\n")
-                    .filter(item => item.trim().length > 0 && !item.startsWith('Execute'))
-                    .map(item => ({ ...action.object, message: item, count: count++ }));
-                return [ ...state, ...items ];
-            }
-
-            //return [ ...state.slice(-200), action.object ];
-            return [ ...state, { ...action.object, count: count++ } ];
+            return [ ...state, action.object ];
+        case ADD_LOGS:
+            return [ ...state, ...action.objects ];
         default:
             return state;
     }
@@ -51,6 +44,9 @@ const log = (state = [], action) => {
 const internal = (state = {}, action) => {
     switch (action.type) {
         case PATCH:
+            let stats = state.stats;
+            let graph = stats.graph;
+
             if (action.delta.patch) {
                 state = cloneDeep(state);
                 jsonPatch(state, action.delta.patch);
@@ -63,8 +59,22 @@ const internal = (state = {}, action) => {
             let busy = state.sessions.reduce((prev, cur) => prev + cur.tasks.length, 0);
             let users = state.users.length;
             let queue = state.queue.length;
-            let peak = !state.stats || queue === 0 ? 0 : Math.max(state.stats.peak, queue);
-            return { ...state, stats: { sessions, busy, users, analyzers, queue, peak } };
+            let peak = Math.max(stats.peak, queue);
+            if (queue === 0 && peak > 1)
+                peak = peak - 1;
+
+            // Update graph
+            let timestamp = stats.timestamp;
+            let now = Date.now();
+            if (now - timestamp > 1000) {
+                timestamp = now;
+                graph = [ ...stats.graph.slice(-49), queue ];
+            }
+
+            return {
+                ...state,
+                stats: { sessions, busy, users, analyzers, queue, peak, graph, timestamp }
+            };
 
         default:
             return state;
@@ -90,21 +100,21 @@ const localState = {
     settings: {
         url: document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`,
         templates: {
-            javascript: require("raw!./assets/template_js.txt"),
-            classcad: require("raw!./assets/template_cc.txt"),
+            javascript: require("raw!../assets/template.txt")
         },
-        layout: require("json!./assets/layout.json"),
         filter: "",
         editorText: ""
     },
     internal: {
         stats: {
-            peak: 0,
+            peak: 1,
             sessions: 0,
             busy: 0,
             users: 0,
             analyzers: 0,
-            queue: 0
+            queue: 0,
+            graph: new Array(50).fill(0),
+            timestamp: Date.now()
         }
     },
     log: []
@@ -124,6 +134,7 @@ export const store = createStore(combineReducers({ settings, log, status, intern
 export const setUrl = url => ({ type: SET_URL, url });
 export const setEditorText = editorText => ({ type: SET_EDITOR_TEXT, editorText });
 export const addLog = object => ({ type: ADD_LOG, object });
+export const addLogs = objects => ({ type: ADD_LOGS, objects });
 export const notify = message => ({ type: NOTIFY, message });
 export const setConnected = connected => ({ type: SET_CONNECTED, connected });
 export const patch = delta => ({ type: PATCH, delta });
@@ -132,50 +143,55 @@ class Analyzer extends SocketIO {
     constructor() {
         super({ debug: true, credentials: [] });
 
-        this.tasks = [];
+        this.messages = [];
+        this.patches = [];
 
         this.on('connected', (socket, data) => {
             store.dispatch(patch(data.tree));
             store.dispatch(setConnected(true));
+            store.dispatch(notify(store.getState().settings.url));
+
             this.socket.on('debug', data => {
                 SocketIO._ack(this.socket);
-
                 switch(data.type) {
                     case 'message':
-                        this.tasks.push(addLog(data));
+                        if (data.message.indexOf("\n") > 0) {
+                            let items = data.message.split("\n")
+                                .filter(item => item.trim().length > 0 && !item.startsWith('Execute'))
+                                .map(item => ({ ...data, message: item }));
+                            this.messages = this.messages.concat(items);
+                        } else {
+                            this.messages.push(data);
+                        }
                         break;
                     case 'patch':
-                        this.tasks.push(patch(data));
+                        this.patches.push(data);
                         break;
                 }
-
-                // Drain actions
-                this.frame && cancelIdleCallback(this.frame);
-                this.frame = requestIdleCallback(() => {
-                    this.frame = undefined;
-                    this.tasks.forEach(task => store.dispatch(task));
-                    this.tasks = [];
-                });
-
+                this.update();
             });
         });
+
         this.on('disconnected', socket => {
             store.dispatch(setConnected(false));
+            this.update();
+        });
+
+        this.on('error', reason => {
+            store.dispatch(setConnected(false));
+            store.dispatch(notify(reason.message))
+            this.update();
         });
     }
+
+    update = throttle(() => {
+        this.messages.length > 0 && store.dispatch(addLogs(this.messages));
+        this.patches.length > 0 && this.patches.forEach(patchSet => store.dispatch(patch(patchSet)));
+        this.patches = [];
+        this.messages = [];
+    }, store.getState().internal.stats.queue > 10 ? 500 : 50);
 }
 
 let url = store.getState().settings.url;
 let analyzer = new Analyzer();
-analyzer.connect(url)
-    .then( _ => store.dispatch(notify(url)))
-    .catch( reason => {
-        store.dispatch(notify(reason.message));
-        alertify.defaultValue(url).prompt("Enter server endpoint", val => {
-            store.dispatch(setUrl(val));
-            url = store.getState().settings.url;
-            analyzer.connect(url)
-                .then( _ => store.dispatch(notify(url)))
-                .catch( reason => store.dispatch(notify(reason.message)));
-        });
-    });
+analyzer.connect(url).catch( reason => store.dispatch(notify(reason.message)));

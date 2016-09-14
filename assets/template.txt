@@ -18,9 +18,11 @@ let context = await connection.execute(`
 show(context)
 
 // Fetch results
-context = await connection.execute(`RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");`)
+context = await connection.execute(`
+    RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");
+`)
 
-// Catch results
+// Display results
 results(context)
 
 // Disconnect

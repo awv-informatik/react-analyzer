@@ -30,7 +30,6 @@
     "json-loader": "^0.5.4",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "v2.0.0-alpha-4",
-    "react-infinite-pane": "^0.1.5",
     "react-router": "^2.7.0",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.5",
@@ -39,7 +38,6 @@
     "webpack-dev-server": "^1.15.1"
   },
   "dependencies": {
-    "alertify.js": "^1.0.12",
     "awv3": "^1.0.89",
     "babel-standalone": "^6.15.0",
     "brace": "^0.8.0",
@@ -51,6 +49,7 @@
     "react-addons-css-transition-group": "^15.3.1",
     "react-addons-shallow-compare": "^15.3.1",
     "react-dom": "^15.3.1",
+    "react-graph-bars": "^1.0.2",
     "react-json-tree": "^0.10.0",
     "react-lite": "^0.15.17",
     "react-redux": "^4.4.5",

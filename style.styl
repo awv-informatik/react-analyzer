@@ -150,8 +150,6 @@ body
     cursor: pointer
 
 .classcad-error
-    background-color: red
-    color: white
     font-weight: 600
 
 .classcad:hover, .user:hover, .sign:hover, .message:hover
@@ -191,7 +189,6 @@ footer
     padding-left: 20px
     min-height: 60px
     width: 100%
-    background-color: #3c414e
     font-family: BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Ubuntu, Cantarell, sans-serif
     font-size: 14px
     color: white
@@ -239,7 +236,26 @@ footer
     width: 100%
     height: 100%
 
-/* Dark
-body
-    background-color: #252830
-*/
+.graph
+    margin-top: 50px
+    display: flex
+    height: 100px
+    .bar
+        flex: 1
+        position: relative
+        height: 100%
+        display: inline-block
+        margin-right: .25rem
+    .full, .value
+        position: absolute
+        bottom: 0
+        left: 0
+        right: 0
+    .full
+        top: 0
+        background: rgba(100,100,100,.1)
+    .value
+        z-index: 1
+    &.square
+        .full, .value
+            border-radius: 0

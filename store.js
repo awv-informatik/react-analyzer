@@ -57,7 +57,14 @@ const internal = (state = {}, action) => {
             } else {
                 state = action.delta;
             }
-            return state;
+
+            let sessions = state.sessions.length;
+            let analyzers = state.analyzers.length;
+            let busy = state.sessions.reduce((prev, cur) => prev + cur.tasks.length, 0);
+            let users = state.users.length;
+            let queue = state.queue.length;
+            let peak = !state.stats || queue === 0 ? 0 : Math.max(state.stats.peak, queue);
+            return { ...state, stats: { sessions, busy, users, analyzers, queue, peak } };
 
         default:
             return state;
@@ -89,7 +96,18 @@ const localState = {
         layout: require("json!./assets/layout.json"),
         filter: "",
         editorText: ""
-    }
+    },
+    internal: {
+        stats: {
+            peak: 0,
+            sessions: 0,
+            busy: 0,
+            users: 0,
+            analyzers: 0,
+            queue: 0
+        }
+    },
+    log: []
 };
 
 // Get state local storage, if any

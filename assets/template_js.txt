@@ -12,11 +12,13 @@ let context = await connection.execute(`
     // Init tooldesigner and load tool
     _C.ToolDesigner3d.InitApplication("Drawings/3dToolDesigner/3dToolDesigner.of1");
     _O.ToolDesigner3d.LoadExistingTool("Drawings/ISO_Tool/Demo_Tool.of1");
-    RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");
 `)
 
 // Display models
 show(context)
+
+// Fetch results
+context = await connection.execute(`RETURN _O.ToolDesigner3d.GetComponentParams("EXTENSION");`)
 
 // Catch results
 results(context)

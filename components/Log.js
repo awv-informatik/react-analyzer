@@ -39,17 +39,14 @@ export const FlatItemLine = ({ index, classes, sign, classcad, user, message, di
     </div>
 );
 
+@connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Log extends React.Component {
     static propTypes = {
-        lines: React.PropTypes.array,
         wrap: React.PropTypes.bool,
-        filter: React.PropTypes.string
     }
 
     static defaultProps = {
-        lines: [],
         wrap: false,
-        filter: ""
     }
 
     setFilter = (filter) =>
@@ -57,12 +54,12 @@ export default class Log extends React.Component {
 
     render() {
 
-        this.items = this.props.lines;
+        this.items = this.props.log;
 
         // Filter props
         if (this.props.filter.length > 0) {
             let filter = new RegExp(this.props.filter, "i");
-            this.items = this.props.lines.filter(item => (
+            this.items = this.props.log.filter(item => (
                filter.test(item.message) ||
                filter.test("USR" + item.user.key) ||
                filter.test("CCD" + item.classcad.key)

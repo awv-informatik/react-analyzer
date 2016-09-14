@@ -10,18 +10,13 @@ import Overview from './components/Overview';
 import Log from './components/Log';
 import Editor from './components/Editor';
 
-const LiveLog = connect(state => ({
-    lines: state.log,
-    filter: state.settings.filter
-}))(Log);
-
 ReactDOM.render((
     <Provider store={store}>
         <Router history={syncHistoryWithStore(hashHistory, store)}>
             <Route path="/" component={Navigation}>
                 <IndexRoute component={Overview} />
                 <Route path="/overview" component={Overview} />
-                <Route path="/log" component={LiveLog} />
+                <Route path="/log" component={Log} />
                 <Route path="/editor" component={Editor} />
             </Route>
         </Router>

@@ -8,7 +8,7 @@ import AceEditor from 'react-ace';
 import 'brace/mode/jsx';
 import 'brace/theme/xcode';
 
-import Presentation from '../assets/presentation';
+import Presentation from 'awv3/misc/presentation';
 import Object3 from 'awv3/three/object3';
 import SocketIO from 'awv3/communication/socketio';
 import Rest from 'awv3/communication/rest';
@@ -42,7 +42,6 @@ export default class Editor extends React.Component {
     }
 
     toggle = (top = !this.state.top) => {
-        console.log(top)
         this.setState({ top });
         if (top)
             animateScroll.scrollToTop({ containerId: 'container' });
@@ -120,7 +119,7 @@ export default class Editor extends React.Component {
 
         window.clear = () => {
             view.scene.destroy();
-            window.presenter = new Presentation();
+            window.presenter = new Presentation([], { ambient: 1 });
             window.view.scene.add(window.presenter);
             this.setState({ results: [] });
         };

@@ -19,10 +19,10 @@ module.exports = {
         ]
     },
     resolve: {
-        alias: production ? {
+        /*alias: production ? {
             'react': 'react-lite',
             'react-dom': 'react-lite'
-        } : {}
+        } : {}*/
     },
     plugins: (production ? [
         new webpack.DefinePlugin({ 'process.env': { 'NODE_ENV': JSON.stringify('production') } }),

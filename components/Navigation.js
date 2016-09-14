@@ -3,74 +3,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { RouteTransition } from 'react-router-transition';
-
-@connect(state => ({
-    status: state.status,
-    filter: state.settings.filter ,
-    queue: state.internal.queue,
-    users: state.internal.users,
-    sessions: state.internal.sessions,
-    analyzers: state.internal.analyzers,
-    log: state.log
-}))
-class Footer extends React.Component {
-    static propTypes = {
-        queue: React.PropTypes.array,
-        users: React.PropTypes.array,
-        analyzers: React.PropTypes.array,
-        sessions: React.PropTypes.array,
-        log: React.PropTypes.array
-    }
-
-    static defaultProps = {
-        queue: [],
-        users: [],
-        analyzers: [],
-        sessions: [],
-        log: []
-    }
-
-    render() {
-
-        let sessions = this.props.sessions.length;
-        let busy = this.props.sessions.reduce((prev, cur) => prev + cur.tasks.length, 0);
-        let users = this.props.users.length;
-        let queue = this.props.queue.length;
-        let valueQueue = Math.round((Math.min(1, queue / users) || 0 ) * 100);
-        let valueLoad = Math.round((Math.min(1, queue / sessions) || 0 )  * 100);
-        let log = this.props.log[this.props.log.length -1];
-
-        return (
-            <footer>
-                <a className="ui image label">
-                    <img src="http://semantic-ui.com/images/avatar/small/christian.jpg" />
-                    Admin
-                </a>
-                {this.props.status.connected ?
-                    <i className="green large check icon" /> :
-                    <i className="large pink remove icon" />
-                }
-                <span>{this.props.status.message}</span>
-
-                <i className="blue large loading circle notched icon" />
-
-                <div style={{ flex: 1, textTransform: 'uppercase', height: 19.5, overflow: 'hidden' }}>
-                    { log && <span className="log">
-                    CCD{log.classcad.key.substr(0, 8)} USR{log.user.key.substr(0, 8)} {log.sign} {log.message}
-                    </span> }
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', maxWidth: 400, alignItems: 'stretch' }}>
-                    <div style={{ flex: 1 }}><i className="grey large sitemap icon" /> {sessions}</div>
-                    <div style={{ flex: 1 }}><i className="grey large users icon" /> {users}</div>
-                    <div style={{ flex: 1 }}><i className="grey large tasks icon" /> {queue}</div>
-                    <div style={{ flex: 1, color: '#2185D0' }}><i className="blue large cloud download icon" /> {valueLoad} %</div>
-                    <div style={{ flex: 1, color: '#2185D0' }}><i className="blue large wait icon" /> {valueQueue} %</div>
-                </div>
-            </footer>
-        )
-    }
-}
+import Footer from '../components/Footer';
 
 @connect(state => ({ filter: state.settings.filter }))
 export default class extends React.Component{
@@ -87,7 +20,7 @@ export default class extends React.Component{
                         <div style={{ position: 'fixed', top: 120 }}>
 
                             <h1 style={{ position: 'absolute', top: -50, color: '#64a8db', fontSize: 30, fontWeight: 600 }}>
-                                <i className="cube icon"></i>AWV<span style={{ color: '#dfdfdf' }}>NODE</span>
+                                <i className="cube icon"></i>AWV<span style={{ color: '#d4d2d2' }}>NODE</span>
                             </h1>
 
                             <div className="ui icon input" style={{ marginBottom: 20 }}>

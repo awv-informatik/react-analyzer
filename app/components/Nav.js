@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 @connect()
 export default class Nav extends React.Component {
-    render() {        
+    render() {
         return (
             <nav style={{ minWidth: 200 }}>
 
@@ -22,8 +22,8 @@ export default class Nav extends React.Component {
 
                     <div className="ui secondary vertical menu">
                         <Link to="/overview" className="item" activeClassName="active blue">Overview</Link>
-                        <Link to="/log" className="item" activeClassName="active blue">Logs</Link>
-                        <Link to="/editor" className="item" activeClassName="active blue">Editor</Link>
+                        <Link to="/logs" className="item" activeClassName="active blue">Logs</Link>
+                        <Link to="/proto" className="item" activeClassName="active blue">Prototyping</Link>
                     </div>
 
                 </div>

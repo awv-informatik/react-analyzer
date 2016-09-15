@@ -1,11 +1,10 @@
 import React from 'react';
-import { v4 } from 'node-uuid';
 import { connect } from 'react-redux';
 import { AutoSizer, VirtualScroll } from 'react-virtualized';
 import escapeStringRegexp from 'escape-string-regexp';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
-export default class Log extends React.Component {
+export default class Logs extends React.Component {
     static propTypes = { wrap: React.PropTypes.bool }
     static defaultProps = { wrap: false }
 

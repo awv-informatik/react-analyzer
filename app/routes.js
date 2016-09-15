@@ -7,8 +7,8 @@ import { store } from './store/store';
 
 import App from './pages/App';
 import Overview from './pages/Overview';
-import Log from './pages/Log';
-import Editor from './pages/Editor';
+import Logs from './pages/Logs';
+import Proto from './pages/Proto';
 
 ReactDOM.render((
     <Provider store={store}>
@@ -16,8 +16,8 @@ ReactDOM.render((
             <Route path="/" component={App}>
                 <IndexRoute component={Overview} />
                 <Route path="/overview" component={Overview} />
-                <Route path="/log" component={Log} />
-                <Route path="/editor" component={Editor} />
+                <Route path="/logs" component={Logs} />
+                <Route path="/proto" component={Proto} />
             </Route>
         </Router>
     </Provider>

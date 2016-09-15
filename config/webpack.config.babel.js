@@ -1,6 +1,5 @@
 import webpack from 'webpack';
 import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const production = process.env.NODE_ENV === 'production';
 
@@ -31,3 +30,5 @@ module.exports = {
     cache: true,
     debug: false
 };
+
+console.log(module.exports)

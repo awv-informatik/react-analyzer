@@ -7,6 +7,7 @@ import { apply as jsonPatch } from 'fast-json-patch';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 import SocketIO from 'awv3/communication/socketio';
+import { url as getUrl} from 'awv3/core/helpers';
 
 const SET_URL = 'SET_URL';
 const SET_FILTER = 'SET_FILTER';
@@ -94,13 +95,13 @@ const status = (state = {}, action) => {
 
 const localState = {
     status: {
+        url: getUrl("url") || (document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`),
         connected: false,
-        message: "..."
+        message: ""
     },
     settings: {
-        url: document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`,
         templates: {
-            javascript: require("raw!./assets/template.txt")
+            javascript: require("raw!../assets/template.txt")
         },
         filter: "",
         editorText: ""
@@ -192,6 +193,6 @@ class Analyzer extends SocketIO {
     }, store.getState().internal.stats.queue > 10 ? 500 : 50);
 }
 
-let url = store.getState().settings.url;
+let url = store.getState().status.url;
 let analyzer = new Analyzer();
 analyzer.connect(url).catch( reason => store.dispatch(notify(reason.message)));

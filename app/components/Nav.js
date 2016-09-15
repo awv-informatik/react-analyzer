@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 @connect()
 export default class Nav extends React.Component {
-    render() {
+    render() {        
         return (
             <nav style={{ minWidth: 200 }}>
 

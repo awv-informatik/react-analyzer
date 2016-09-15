@@ -3,8 +3,8 @@ const production = process.env.NODE_ENV === 'production';
 
 module.exports = {
     entry: {
-        site: "./index.js",
-        styles: "./assets/style.styl"
+        site: "./app/routes.js",
+        style: "./app/assets/site.styl"
     },
     output: {
         publicPath: '/',

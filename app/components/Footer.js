@@ -12,32 +12,25 @@ import { connect } from 'react-redux';
 export default class Footer extends React.Component {
     render() {
 
-        let { sessions, queue, peak, users } = this.props;
+        let { sessions, queue, peak, users, status, log } = this.props;
         let valueQueue = Math.round((Math.min(1, queue / peak) || 0 ) * 100);
         let valueLoad = Math.round((Math.min(1, queue / sessions) || 0 )  * 100);
-        let log = this.props.log[this.props.log.length -1];
+        log = log && log[log.length - 1];
 
         return (
             <footer>
                 <a className="ui image label">
-                    <img src="http://semantic-ui.com/images/avatar/small/christian.jpg" />
-                    Admin
+                    <img src="http://semantic-ui.com/images/avatar/small/christian.jpg" /> Admin
                 </a>
-                {this.props.status.connected ?
-                    <i className="green large check icon" /> :
-                    <i className="large pink remove icon" />
-                }
-                <span>{this.props.status.message}</span>
-
+                <i className={ `${status.connected ? "green check" : "pink remove"} large icon` } />
+                <span>{status.url}</span><span>{status.message}</span>
                 <i className="blue large loading circle notched icon" />
-
-                <div style={{ flex: 1, textTransform: 'uppercase', height: 19.5, overflow: 'hidden' }}>
+                <div style={style.log}>
                     { log && <span className="log">
-                    CCD{log.classcad.key.substr(0, 8)} USR{log.user.key.substr(0, 8)} {log.sign} {log.message}
+                        {log.classcad.key.substr(0, 11)} {log.user.key.substr(0, 11)} {log.sign} {log.message}
                     </span> }
                 </div>
-
-                <div style={{ flex: 1, display: 'flex', maxWidth: 400, alignItems: 'stretch' }}>
+                <div style={style.status}>
                     <div style={{ flex: 1 }}><i className="grey large sitemap icon" /> {sessions}</div>
                     <div style={{ flex: 1 }}><i className="grey large users icon" /> {users}</div>
                     <div style={{ flex: 1 }}><i className="grey large tasks icon" /> {queue}</div>
@@ -47,4 +40,9 @@ export default class Footer extends React.Component {
             </footer>
         )
     }
+}
+
+const style = {
+    log: { flex: 1, textTransform: 'uppercase', height: 19.5, overflow: 'hidden' },
+    status: { flex: 1, display: 'flex', maxWidth: 400, alignItems: 'stretch' }
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { animateScroll, Link } from 'react-scroll';
 import { connect } from 'react-redux';
 
 import JSONTree from 'react-json-tree'
@@ -15,7 +14,7 @@ import Rest from 'awv3/communication/rest';
 import Canvas from '../components/Canvas';
 import View from '../components/View';
 
-@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText, url: state.settings.url }))
+@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText, url: state.status.url }))
 export default class Editor extends React.Component {
     static propTypes = { text: React.PropTypes.string, template: React.PropTypes.string }
     static defaultProps = { text: "", template: "" }
@@ -86,70 +85,65 @@ export default class Editor extends React.Component {
         let text = this.props.text || this.props.template;
 
         return (
-            <div id="container" style={style.container}>
+            <div  style={style.wrapper}>
+            <div ref="container" style={style.container}>
 
-                <div id="top" style={style.top}>
+                <div className="up" style={style.editor}>
 
-                    <div style={style.wrapper}>
+                    <AceEditor
+                        ref="ace" name="randomname" mode="jsx" theme="xcode"
+                        editorProps={{ $blockScrolling: true }}
+                        height="100%" width="100%"
+                        value={ text }
+                        setOptions={{
+                            hScrollBarAlwaysVisible: false,
+                            vScrollBarAlwaysVisible: false,
+                            animatedScroll: true,
+                            showLineNumbers: true,
+                            showInvisibles: true,
+                            useSoftTabs: true,
+                            wrap: true,
+                            behavioursEnabled: true,
+                            wrapBehavioursEnabled: true,
+                            maxLines: Infinity
+                        }} />
 
-                        <div style={style.editor}>
+                    <div style={{ ...style.editorHandle, height: this.state.editorError ? 200 : 40, backgroundColor: this.state.editorLabelBg }}>
+                        <i className={this.state.editorLabelIcon} />
+                        <span style={{ marginLeft: 10 }}>{this.state.editorLabel}</span>
+                    </div>
+                </div>
 
-                            <AceEditor
-                                ref="ace" name="randomname" mode="jsx" theme="xcode"
-                                editorProps={{ $blockScrolling: true }}
-                                height="100%" width="100%"
-                                value={ text }
-                                setOptions={{
-                                    hScrollBarAlwaysVisible: false,
-                                    vScrollBarAlwaysVisible: false,
-                                    animatedScroll: true,
-                                    showLineNumbers: true,
-                                    showInvisibles: true,
-                                    useSoftTabs: true,
-                                    wrap: true,
-                                    behavioursEnabled: true,
-                                    wrapBehavioursEnabled: true,
-                                    maxLines: Infinity
-                                }} />
+                <div style={style.view}>
 
-                            <div style={{ ...style.editorHandle, height: this.state.editorError ? 200 : 40, backgroundColor: this.state.editorLabelBg }}>
-                                <i className={this.state.editorLabelIcon} />
-                                <span style={{ marginLeft: 10 }}>{this.state.editorLabel}</span>
-                            </div>
-                        </div>
+                    <Canvas style={style.canvas}>
+                        <View ref="view" up={ [0, 1, 0] } />
+                    </Canvas>
 
-                        <div id="view" style={style.view}>
+                    <div className="results" style={{
+                        ...style.results, transform: `translate3d(0,${ this.state.resultsUp ? '0' : 'calc(100% - 40px)' },0)` }}>
 
-                            <Canvas style={style.canvas}>
-                                <View ref="view" up={ [0, 1, 0] } />
-                            </Canvas>
+                        <div ref="results-handle" style={{
+                            ...style.resultsHandle, backgroundColor: this.state.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggleResults}>
 
-                            <div className="results" style={{
-                                ...style.results, transform: `translate3d(0,${ this.state.resultsUp ? '0' : 'calc(100% - 40px)' },0)` }}>
-
-                                <div ref="results-handle" style={{
-                                    ...style.resultsHandle, backgroundColor: this.state.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggleResults}>
-
-                                    <i className={`large ${this.state.resultsUp ? 'headsup' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
-                                    <span style={{ marginLeft: 10 }}>Results</span>
-
-                                </div>
-
-                                <JSONTree data={this.state.results} />
-
-                            </div>
+                            <i className={`large ${this.state.resultsUp ? 'headsup' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
+                            <span style={{ marginLeft: 10 }}>Results</span>
 
                         </div>
+
+                        <JSONTree data={this.state.results} />
 
                     </div>
 
                 </div>
 
-                <sidebar style={style.sideBar}>
-                    <i ref="icon"
-                        className={`${this.state.top ? '' : 'headsup'} big blue link chevron down icon`}
-                        style={{ transition: 'transform .2s'}} onClick={() => this.toggle()} />
-                </sidebar>
+            </div>
+
+            <sidebar style={style.sideBar}>
+                <i ref="icon"
+                    className={`${this.state.top ? '' : 'headsup'} big blue link chevron down icon`}
+                    style={{ transition: 'transform .2s'}} onClick={() => this.toggle()} />
+            </sidebar>
 
             </div>
         );
@@ -157,10 +151,9 @@ export default class Editor extends React.Component {
 
     toggle = (top = !this.state.top) => {
         this.setState({ top });
-        if (top)
-            animateScroll.scrollToTop({ containerId: 'container' });
-        else
-            animateScroll.scrollToBottom({ containerId: 'container' });
+        this.refs.container.style.transform = top ?
+            'translate3d(0, 0, 0)' :
+            'translate3d(0, calc(-100vh + 60px), 0)';
     }
 
     toggleResults = () => {
@@ -217,17 +210,20 @@ export default class Editor extends React.Component {
     }
 }
 
- const style = {
-     container: { position: 'absolute',  width: '100%', height: '100%', overflow: 'hidden' },
-     top: { display: 'flex', width: '100%', height: '100%' },
-     wrapper: { flex: 1, height: '100%' },
-     editor: { display: 'flex', flexDirection: 'column', width: '100%', height: '100%' },
+const style = {
+    wrapper: { position: 'absolute', width: '100%' },
+     container: { position: 'absolute', width: '100%', transition: 'transform .5s',
+    transform: 'translate3d(0, 0, 0)', willChange: 'transform' },
+
+     editor: { display: 'flex', flexDirection: 'column', width: '100%', height: 'calc(100vh - 60px)' },
      editorHandle: { display: 'flex', alignItems: 'center', paddingLeft: 50, fontSize: 14, fontWeight: 'bold', color: 'white', transition: 'background-color, height .5s', borderTop: '1px #b5b5b5 solid', whiteSpace: 'pre', fontFamily: 'monospace' },
-     view: { position: 'relative', width: '100%', height: '100%', overflow: 'hidden' },
-     canvas: { backgroundColor: '#efefef', position: 'relative', height: '100%', width: '100%' },
-     results: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#dfdfdf', transition: 'transform .5s' },
-     resultsHandle: { display: 'flex', alignItems: 'center', paddingLeft: 50, height: 40, fontSize: 14, fontWeight: 'bold',
-     color: 'white', transition: 'background-color 1s', cursor: 'pointer',
+
+     view: { position: 'relative', width: '100%', height: 'calc(100vh - 60px)' },
+     canvas: { backgroundColor: '#efefef', position: 'relative', width: '100%', height: '100%', overflow: 'hidden' },
+     results: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#dfdfdf', transition: 'transform .5s', willChange: 'transform' },
+
+     resultsHandle: { display: 'flex', alignItems: 'center', paddingLeft: 50, height: 40, fontSize: 14, fontWeight: 'bold', color: 'white', transition: 'background-color 1s', cursor: 'pointer',
      borderTop: '1px #b5b5b5 solid' },
+
      sideBar: { position: 'fixed', top: 74, right: 40, color: 'white', cursor: 'pointer' }
  }

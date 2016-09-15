@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { RouteTransition } from 'react-router-transition';
-
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 

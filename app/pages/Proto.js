@@ -9,6 +9,7 @@ import View from '../components/View';
 
 @connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText, url: state.status.url }))
 export default class Proto extends React.Component {
+    
     static propTypes = { text: React.PropTypes.string, template: React.PropTypes.string }
     static defaultProps = { text: "", template: "" }
 
@@ -84,8 +85,6 @@ export default class Proto extends React.Component {
             'translate3d(0, calc(-100vh + 60px), 0)';
     }
 }
-
-
 
 const styles = {
     wrapper: { position: 'absolute', width: '100%' },

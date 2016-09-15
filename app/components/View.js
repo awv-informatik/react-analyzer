@@ -19,26 +19,18 @@ export default class ViewImpl extends React.Component {
     render() {
         return (
             <div style={styles.view}>
-
                 <Canvas style={styles.canvas}>
                     <View ref="view" up={ [0, 1, 0] } />
                 </Canvas>
-
                 <div className="results" style={{
                     ...styles.results, transform: `translate3d(0,${ this.state.resultsUp ? '0' : 'calc(100% - 40px)' },0)` }}>
-
                     <div ref="results-handle" style={{
                         ...styles.handle, backgroundColor: this.props.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggle}>
-
                         <i className={`large ${this.state.resultsUp ? 'headsup' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
                         <span style={{ marginLeft: 10 }}>Results</span>
-
                     </div>
-
                     <JSONTree data={this.props.results} />
-
                 </div>
-
             </div>
         );
     }

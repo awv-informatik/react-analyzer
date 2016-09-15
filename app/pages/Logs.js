@@ -6,6 +6,7 @@ import LogItem from '../components/LogItem';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Logs extends React.Component {
+    
     static propTypes = { wrap: React.PropTypes.bool }
     static defaultProps = { wrap: false }
 

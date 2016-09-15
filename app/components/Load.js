@@ -11,25 +11,10 @@ const states = ['green', 'orange', 'red', '#E53935', '#D81B60'];
 }))
 export default class Load extends React.Component {
 
-    static propTypes = {
-        size: React.PropTypes.number,
-        strokeWidth: React.PropTypes.number,
-        calc: React.PropTypes.func
-    }
-
-    static defaultProps = {
-        size: 200,
-        strokeWidth: 32
-    }
-
-    constructor() {
-        super();
-
-        this.max = 0;
-    }
+    static propTypes = { size: React.PropTypes.number, strokeWidth: React.PropTypes.number, calc: React.PropTypes.func }
+    static defaultProps = { size: 200, strokeWidth: 32 }
 
     render() {
-
         let { sessions, queue, peak } = this.props;
         let value = Math.min(1, this.props.calc ? this.props.calc(this.props) : queue / peak) || 0;
         let color = states[Math.floor(value * (states.length - 1))];
@@ -37,12 +22,7 @@ export default class Load extends React.Component {
         return (
             <div style={{ position: 'relative', ...this.props.style }}>
                 {this.props.children}
-                <Donut
-                    color={color}
-                    size={this.props.size}
-                    strokeWidth={this.props.strokeWidth}
-                    value={+value}
-                />
+                <Donut color={color} size={this.props.size} strokeWidth={this.props.strokeWidth} value={+value} />
             </div>
         );
     }

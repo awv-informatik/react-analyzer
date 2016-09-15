@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-
 import Load from '../components/Load';
-import Stat from '../components/Stat';
 import Graph from 'react-graph-bars';
+import Stat from 'rebass/dist/Stat';
 
 @connect(state => ({
     status: state.status,
@@ -35,7 +34,6 @@ export default class Overview extends React.Component {
         return (
             <div style={{ ...styles.container, ...this.props.styles }}>
                 <div style={styles.flexHorizontal}>
-
                     <div style={styles.flexVertical}>
                         <div style={{ display: 'flex' }}>
                             <Load size={200} style={{ marginRight: 50 }}>
@@ -48,14 +46,12 @@ export default class Overview extends React.Component {
                         <Graph name="graph" data={currentGraph} minColor="#edf8f3" maxColor="#E53935" />
                         <span style={{ marginTop: 10 }}>Tasks</span>
                     </div>
-
                     <ul style={styles.list}>
-                        <li><Stat name="Sessions" label="running" value={sessions} /></li>
-                        <li><Stat name="Users" label="active" value={users} /></li>
-                        <li><Stat name="Tasks" label="queued" value={queue} /></li>
+                        <li><Stat unit="Sessions" label=" running" value={sessions} style={styles.stat} /></li>
+                        <li><Stat unit="Users" label=" active" value={users} style={styles.stat} /></li>
+                        <li><Stat unit="Tasks" label=" queued" value={queue} style={styles.stat} /></li>
                     </ul>
                 </div>
-
             </div>
         )
     }
@@ -66,5 +62,6 @@ const styles = {
     flexHorizontal: { display: 'flex', paddingBottom: 174, color: 'white', height: '100%', color: '#d4d2d2' },
     flexVertical: { display: 'flex', flexDirection: 'column' },
     tag: { position: 'absolute', bottom: -10 },
-    list: { listStyle: 'none', marginLeft: 100, borderLeft: '4px #efefef solid', height: '100%' }
+    list: { listStyle: 'none', marginLeft: 100, borderLeft: '4px #efefef solid', height: '100%' },
+    stat: { color: '#8c8c8c', paddingBottom: 15 }
 }

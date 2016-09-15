@@ -30,5 +30,3 @@ module.exports = {
     cache: true,
     debug: false
 };
-
-console.log(module.exports)

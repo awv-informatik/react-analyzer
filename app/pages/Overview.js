@@ -14,16 +14,8 @@ import Stat from 'rebass/dist/Stat';
     users: state.internal.stats.users,
 }))
 export default class Overview extends React.Component {
-
-    constructor() {
-        super();
-    }
-
     render() {
-
         let { sessions, queue, peak, graph, users } = this.props;
-
-        // Generate graph data
         let currentGraph = graph.map(item => {
             item = peak > 0 ? 1 - item / peak : 1;
             if (item < 0) item = 0;

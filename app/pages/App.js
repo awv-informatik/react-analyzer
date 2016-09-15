@@ -10,12 +10,12 @@ import Footer from '../components/Footer';
 export default class extends React.Component{
     render() {
         return (
-            <main style={style.main}>
-                <div style={style.wrapper}>
-                    <aside style={style.aside} />
+            <main style={styles.main}>
+                <div style={styles.wrapper}>
+                    <aside style={styles.aside} />
                     <Nav {...this.props} />
-                    <aside style={style.aside} />
-                    <section style={style.section}>
+                    <aside style={styles.aside} />
+                    <section style={styles.section}>
                         <RouteTransition
                             style={stretch}
                             pathname={this.props.location.pathname}
@@ -36,7 +36,7 @@ export default class extends React.Component{
 }
 
 const stretch = { height: '100%', width: '100%' };
-const style = {
+const styles = {
     aside: { width: 100 },
     main: { display: 'flex', flexDirection: 'column', ...stretch },
     wrapper: { display: 'flex', ...stretch },

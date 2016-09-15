@@ -33,23 +33,23 @@ export default class Overview extends React.Component {
         });
 
         return (
-            <div style={{ ...style.container, ...this.props.styles }}>
-                <div style={style.flexHorizontal}>
+            <div style={{ ...styles.container, ...this.props.styles }}>
+                <div style={styles.flexHorizontal}>
 
-                    <div style={style.flexVertical}>
+                    <div style={styles.flexVertical}>
                         <div style={{ display: 'flex' }}>
                             <Load size={200} style={{ marginRight: 50 }}>
-                                <span style={style.tag}>Tasks</span>
+                                <span style={styles.tag}>Tasks</span>
                             </Load>
                             <Load size={200} calc={({ sessions, users, queue }) => queue / sessions}>
-                                <span style={style.tag}>Load</span>
+                                <span style={styles.tag}>Load</span>
                             </Load>
                         </div>
                         <Graph name="graph" data={currentGraph} minColor="#edf8f3" maxColor="#E53935" />
                         <span style={{ marginTop: 10 }}>Tasks</span>
                     </div>
 
-                    <ul style={style.list}>
+                    <ul style={styles.list}>
                         <li><Stat name="Sessions" label="running" value={sessions} /></li>
                         <li><Stat name="Users" label="active" value={users} /></li>
                         <li><Stat name="Tasks" label="queued" value={queue} /></li>
@@ -61,7 +61,7 @@ export default class Overview extends React.Component {
     }
 }
 
-const style = {
+const styles = {
     container: { position: 'absolute', marginTop: 74, display: 'flex', flexDirection: 'column', height: '100%' },
     flexHorizontal: { display: 'flex', paddingBottom: 174, color: 'white', height: '100%', color: '#d4d2d2' },
     flexVertical: { display: 'flex', flexDirection: 'column' },

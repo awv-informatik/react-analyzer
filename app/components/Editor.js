@@ -62,7 +62,7 @@ export default class Editor extends React.Component {
     render() {
 
         return (
-            <div style={style.editor}>
+            <div style={styles.editor}>
 
                 <AceEditor
                     ref="ace" name="randomname" mode="jsx" theme="xcode"
@@ -82,7 +82,7 @@ export default class Editor extends React.Component {
                         maxLines: Infinity
                     }} />
 
-                <div style={{ ...style.editorHandle, height: this.state.error ? 200 : 40, backgroundColor: this.state.color }}>
+                <div style={{ ...styles.editorHandle, height: this.state.error ? 200 : 40, backgroundColor: this.state.color }}>
                     <i className={this.state.icon} />
                     <span style={{ marginLeft: 10 }}>{this.state.label}</span>
                 </div>
@@ -91,7 +91,7 @@ export default class Editor extends React.Component {
     }
 }
 
-const style = {
+const styles = {
     editor: { display: 'flex', flexDirection: 'column', width: '100%', height: 'calc(100vh - 60px)' },
     editorHandle: { display: 'flex', alignItems: 'center', paddingLeft: 50, fontSize: 14, fontWeight: 'bold', color: 'white', transition: 'background-color, height .5s', borderTop: '1px #b5b5b5 solid', whiteSpace: 'pre', fontFamily: 'monospace' }
  }

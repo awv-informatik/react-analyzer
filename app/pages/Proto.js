@@ -63,12 +63,12 @@ export default class Proto extends React.Component {
     render() {
 
         return (
-            <div  style={style.wrapper}>
-                <div ref="container" style={style.container}>
+            <div  style={styles.wrapper}>
+                <div ref="container" style={styles.container}>
                     <Editor text={this.props.text || this.props.template} />
                     <View ref="view" results={this.state.results} />
                 </div>
-                <sidebar style={style.sideBar}>
+                <sidebar style={styles.sideBar}>
                     <i ref="icon" className={`${this.state.top ? '' : 'headsup'} big blue link chevron down icon`}
                         style={{ transition: 'transform .2s'}} onClick={() => this.toggle()} />
                 </sidebar>
@@ -87,7 +87,7 @@ export default class Proto extends React.Component {
 
 
 
-const style = {
+const styles = {
     wrapper: { position: 'absolute', width: '100%' },
     container: { position: 'absolute', width: '100%', transition: 'transform .5s',
     transform: 'translate3d(0, 0, 0)', willChange: 'transform' },

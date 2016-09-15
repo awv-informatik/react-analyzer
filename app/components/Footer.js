@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import LogItem from '../components/LogItem';
 
 @connect(state => ({
     status: state.status,
@@ -25,12 +26,11 @@ export default class Footer extends React.Component {
                 <i className={ `${status.connected ? "green check" : "pink remove"} large icon` } />
                 <span>{status.url}</span><span>{status.message}</span>
                 <i className="blue large loading circle notched icon" />
-                <div style={style.log}>
-                    { log && <span className="log">
-                        {log.classcad.key.substr(0, 11)} {log.user.key.substr(0, 11)} {log.sign} {log.message}
-                    </span> }
-                </div>
-                <div style={style.status}>
+                { log ?
+                    <LogItem wrap={false} {...log} style={styles.log} /> :
+                    <span style={styles.log} />
+                }
+                <div style={styles.status}>
                     <div style={{ flex: 1 }}><i className="grey large sitemap icon" /> {sessions}</div>
                     <div style={{ flex: 1 }}><i className="grey large users icon" /> {users}</div>
                     <div style={{ flex: 1 }}><i className="grey large tasks icon" /> {queue}</div>
@@ -42,7 +42,7 @@ export default class Footer extends React.Component {
     }
 }
 
-const style = {
-    log: { flex: 1, textTransform: 'uppercase', height: 19.5, overflow: 'hidden' },
+const styles = {
+    log: { flex: 1, height: 19.5, overflow: 'hidden', paddingRight: 20 },
     status: { flex: 1, display: 'flex', maxWidth: 400, alignItems: 'stretch' }
 }

@@ -18,17 +18,17 @@ export default class ViewImpl extends React.Component {
 
     render() {
         return (
-            <div style={style.view}>
+            <div style={styles.view}>
 
-                <Canvas style={style.canvas}>
+                <Canvas style={styles.canvas}>
                     <View ref="view" up={ [0, 1, 0] } />
                 </Canvas>
 
                 <div className="results" style={{
-                    ...style.results, transform: `translate3d(0,${ this.state.resultsUp ? '0' : 'calc(100% - 40px)' },0)` }}>
+                    ...styles.results, transform: `translate3d(0,${ this.state.resultsUp ? '0' : 'calc(100% - 40px)' },0)` }}>
 
                     <div ref="results-handle" style={{
-                        ...style.handle, backgroundColor: this.props.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggle}>
+                        ...styles.handle, backgroundColor: this.props.results.length > 0 ? '#11cc77' : '#c6c6c6' }} onClick={this.toggle}>
 
                         <i className={`large ${this.state.resultsUp ? 'headsup' : ''} chevron up icon`} style={{ transition: 'transform .2s'}}/>
                         <span style={{ marginLeft: 10 }}>Results</span>
@@ -44,7 +44,7 @@ export default class ViewImpl extends React.Component {
     }
 }
 
-const style = {
+const styles = {
     view: { position: 'relative', width: '100%', height: 'calc(100vh - 60px)' },
     canvas: { backgroundColor: '#efefef', position: 'relative', width: '100%', height: '100%', overflow: 'hidden' },
     results: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#dfdfdf', transition: 'transform .5s', willChange: 'transform' },

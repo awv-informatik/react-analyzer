@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "start": "webpack-dev-server --inline --hot --history-api-fallback",
-    "serve": "cross-env NODE_ENV=production webpack-dev-server --history-api-fallback",
-    "size": "cross-env NODE_ENV=production webpack --json | webpack-bundle-size-analyzer"
+    "build": "cross-env NODE_ENV=production webpack --config config/webpack.config.babel.js",
+    "bundle": "cross-env NODE_ENV=production webpack --config config/webpack.config.bundle.babel.js",
+    "start": "webpack-dev-server --inline --hot --history-api-fallback --config config/webpack.config.babel.js",
+    "serve": "cross-env NODE_ENV=production webpack-dev-server --history-api-fallback --config config/webpack.config.babel.js",
+    "size": "cross-env NODE_ENV=production webpack --json --config config/webpack.config.babel.js | webpack-bundle-size-analyzer"
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +29,9 @@
     "babel-runtime": "^6.11.6",
     "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
+    "html-webpack-plugin": "^2.22.0",
+    "jade": "^1.11.0",
+    "jade-loader": "^0.8.0",
     "json-loader": "^0.5.4",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "v2.0.0-alpha-4",
@@ -40,6 +44,8 @@
   },
   "dependencies": {
     "awv3": "^1.0.89",
+    "babel-core": "^6.14.0",
+    "babel-polyfill": "^6.13.0",
     "babel-standalone": "^6.15.0",
     "brace": "^0.8.0",
     "escape-string-regexp": "^1.0.5",

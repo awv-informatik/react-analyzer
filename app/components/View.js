@@ -4,10 +4,7 @@ import View from '../components/awv3/View';
 import JSONTree from 'react-json-tree'
 
 export default class ViewImpl extends React.Component {
-    constructor() {
-        super();
-        this.state = { resultsUp: false };
-    }
+    state = { resultsUp: false }
 
     componentDidMount() {
         this.viewImpl = this.refs.view.viewImpl;

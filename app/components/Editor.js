@@ -6,10 +6,7 @@ import 'brace/theme/xcode';
 
 @connect()
 export default class Editor extends React.Component {
-    constructor() {
-        super();
-        this.state = { label: "[ CTRL - S ] to compile", icon: "large info icon", color: "#64a8db", error: false };
-    }
+    state = { label: "[ CTRL - S ] to compile", icon: "large info icon", color: "#64a8db", error: false }
 
     componentDidMount() {
         window.addEventListener("keydown", this.listen);

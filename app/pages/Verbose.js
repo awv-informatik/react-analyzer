@@ -4,11 +4,7 @@ import { analyzer } from '../store/store';
 
 @connect(state => ({ sessions: state.internal.sessions, filter: state.settings.filter, url: state.status.url }))
 export default class Verbose extends React.Component {
-
-    constructor() {
-        super();
-        this.state = { log: "" };
-    }
+    state = { log: "" };
 
     setFilter = (filter) =>
         this.props.dispatch({ type: 'SET_FILTER', filter });
@@ -27,13 +23,11 @@ export default class Verbose extends React.Component {
             filteredSessions = sessions.filter(item => filterExp.test(item.id));
         }
 
-        console.log(filteredSessions)
-
         return (
             <div style={styles.wrapper}>
                 <ul style={{ margin: 0, marginTop: 74, paddingRight: 50, paddingLeft: 0, listStyle: 'none' }}>
                     {filteredSessions && filteredSessions.map(session =>
-                        <li key={session.id} className={`item classcad color-${session.color}-600`} onClick={() => this.click(session.id)}>
+                        <li key={session.id} className={`logitem classcad color-${session.color}-600`} onClick={() => this.click(session.id)}>
                             {session.id}
                         </li>)}
                 </ul>

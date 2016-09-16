@@ -5,7 +5,6 @@ import LogItem from '../components/LogItem';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Logs extends React.Component {
-
     static propTypes = { wrap: React.PropTypes.bool }
     static defaultProps = { wrap: false }
 
@@ -29,7 +28,7 @@ export default class Logs extends React.Component {
                         <VirtualScroll style={styles.scroller} rowStyle={{ position: 'absolute' }} width={width} height={height}
                             rowCount={filteredLog.length} rowHeight={ ({ index }) => index === 0 ? 93.5 : 19.5 }
                             rowRenderer={({ index, isScrolling }) =>
-                                <LogItem key={index} index={index} wrap={true}
+                                <LogItem key={index} index={index} wrap
                                     {...filteredLog[index]} onItemClicked={this.setFilter} style={{ marginRight: 100 }}/>}
                             noRowsRenderer={() =>
                                 <div className="log" style={{ paddingTop: 74 }}>No logs received ...</div>}

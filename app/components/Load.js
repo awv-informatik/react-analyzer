@@ -10,7 +10,6 @@ const states = ['green', 'orange', 'red', '#E53935', '#D81B60'];
     peak: state.internal.stats.peak
 }))
 export default class Load extends React.Component {
-
     static propTypes = { size: React.PropTypes.number, strokeWidth: React.PropTypes.number, calc: React.PropTypes.func }
     static defaultProps = { size: 200, strokeWidth: 32 }
 

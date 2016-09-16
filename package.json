@@ -61,7 +61,6 @@
     "react-json-tree": "^0.10.0",
     "react-lite": "^0.15.17",
     "react-redux": "^4.4.5",
-    "react-router-redux": "^4.0.5",
     "react-router-transition": "0.0.6",
     "react-virtualized": "^7.24.1",
     "rebass": "^0.3.1",

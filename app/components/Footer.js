@@ -12,7 +12,6 @@ import LogItem from '../components/LogItem';
 }))
 export default class Footer extends React.Component {
     render() {
-
         let { sessions, queue, peak, users, status, log } = this.props;
         let valueQueue = Math.round((Math.min(1, queue / peak) || 0 ) * 100);
         let valueLoad = Math.round((Math.min(1, queue / sessions) || 0 )  * 100);

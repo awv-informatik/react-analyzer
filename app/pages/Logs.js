@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AutoSizer, VirtualScroll } from 'react-virtualized';
-import escapeStringRegexp from 'escape-string-regexp';
 import LogItem from '../components/LogItem';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Logs extends React.Component {
-    
+
     static propTypes = { wrap: React.PropTypes.bool }
     static defaultProps = { wrap: false }
 
@@ -16,7 +15,7 @@ export default class Logs extends React.Component {
     render() {
 
         // Apply filter
-        let filter = new RegExp(escapeStringRegexp(this.props.filter), "i");
+        let filter = new RegExp(this.props.filter, "i");
         let filteredLog = this.props.log.filter(item => (
               filter.test(item.message) ||
               filter.test(item.user.key) ||

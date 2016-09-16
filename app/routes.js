@@ -9,6 +9,7 @@ import App from './pages/App';
 import Overview from './pages/Overview';
 import Logs from './pages/Logs';
 import Proto from './pages/Proto';
+import Verbose from './pages/Verbose';
 
 ReactDOM.render((
     <Provider store={store}>
@@ -18,6 +19,7 @@ ReactDOM.render((
                 <Route path="/overview" component={Overview} />
                 <Route path="/logs" component={Logs} />
                 <Route path="/proto" component={Proto} />
+                <Route path="/verbose" component={Verbose} />
             </Route>
         </Router>
     </Provider>

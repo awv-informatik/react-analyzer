@@ -2,12 +2,12 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
-
 import { apply as jsonPatch } from 'fast-json-patch';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 import SocketIO from 'awv3/communication/socketio';
 import { url as getUrl} from 'awv3/core/helpers';
+import escapeStringRegexp from 'escape-string-regexp';
 
 const SET_URL = 'SET_URL';
 const SET_FILTER = 'SET_FILTER';
@@ -23,7 +23,7 @@ const settings = (state = {}, action) => {
         case SET_URL:
             return { ...state, url: action.url };
         case SET_FILTER:
-            return { ...state, filter: action.filter };
+            return { ...state, filter: escapeStringRegexp(action.filter) };
         case SET_EDITOR_TEXT:
             return { ...state, editorText: action.editorText };
         default:
@@ -194,5 +194,5 @@ class Analyzer extends SocketIO {
 }
 
 let url = store.getState().status.url;
-let analyzer = new Analyzer();
+export const analyzer = new Analyzer();
 analyzer.connect(url).catch( reason => store.dispatch(notify(reason.message)));

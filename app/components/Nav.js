@@ -20,6 +20,7 @@ export default class Nav extends React.Component {
                         <Link to="/overview" className="item" activeClassName="active blue">Overview</Link>
                         <Link to="/logs" className="item" activeClassName="active blue">Logs</Link>
                         <Link to="/proto" className="item" activeClassName="active blue">Prototyping</Link>
+                        <Link to="/verbose" className="item" activeClassName="active blue">Verbose</Link>
                     </div>
                 </div>
             </nav>

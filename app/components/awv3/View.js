@@ -3,17 +3,18 @@ import THREE from 'three';
 import { View as ViewImpl } from 'awv3';
 
 export default class View extends React.Component {
-
     static propTypes = { up: React.PropTypes.array }
     static defaultProps = { up: [0, 0, 1] }
 
     componentDidMount() {
+        console.log("mount")
         this.viewImpl = new ViewImpl(this.props.canvas.canvasImpl, {
             dom: this.refs.view, up: new THREE.Vector3().fromArray(this.props.up)
         });
     }
 
     componentWillUnmount() {
+        console.log("unmount")
         if (this.viewImpl) {
             this.viewImpl.destroy();
             delete this.viewImpl;

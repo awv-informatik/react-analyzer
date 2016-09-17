@@ -10,12 +10,7 @@ export default class Canvas extends React.Component {
         this.canvasImpl = canvas;
     }
 
-    get interface () {
-        return this.canvasImpl;
-    }
-
     componentDidMount() {
-
         this.canvasImpl.dom.style.position = 'absolute';
         this.refs.canvas.insertBefore(this.canvasImpl.dom, this.refs.canvas.firstChild);
         setTimeout(() => this.canvasImpl.renderer.resize(), 200);

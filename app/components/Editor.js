@@ -17,7 +17,6 @@ export default class Editor extends React.Component {
     }
 
     listen = async (event) => {
-
         if (event.ctrlKey && event.keyCode == 83) {
             event.preventDefault();
 
@@ -45,7 +44,6 @@ export default class Editor extends React.Component {
             } catch (reason) {
                 this.notify({ error: true, label: reason.message, icon: "large remove icon", color: "#D81B60" }, 4000);
             }
-
         }
     }
 
@@ -57,7 +55,6 @@ export default class Editor extends React.Component {
     }
 
     render() {
-
         return (
             <div style={styles.editor}>
 

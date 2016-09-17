@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config config/webpack.config.babel.js",
     "bundle": "cross-env NODE_ENV=production webpack --config config/webpack.config.bundle.babel.js",
-    "start": "webpack-dev-server --inline --hot --history-api-fallback --config config/webpack.config.babel.js",
+    "start": "cross-env NODE_ENV=dev webpack-dev-server --inline --hot --history-api-fallback --config config/webpack.config.babel.js",
     "serve": "cross-env NODE_ENV=production webpack-dev-server --history-api-fallback --config config/webpack.config.babel.js",
     "size": "cross-env NODE_ENV=production webpack --json --config config/webpack.config.babel.js | webpack-bundle-size-analyzer"
   },

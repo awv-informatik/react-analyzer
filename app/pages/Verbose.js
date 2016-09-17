@@ -6,16 +6,12 @@ import { analyzer } from '../store/store';
 export default class Verbose extends React.Component {
     state = { log: "" };
 
-    setFilter = (filter) =>
-        this.props.dispatch({ type: 'SET_FILTER', filter });
-
     async click(classcad) {
         let { firstResult } = await analyzer.request({ command: 'Execute', task: 'RETURN CADH_GetVerboseFileContent();' }, { classcad });
         this.setState({ log: firstResult });
     }
 
     render() {
-
         let { sessions, filter } = this.props;
         let filteredSessions;
         if (sessions) {
@@ -33,9 +29,7 @@ export default class Verbose extends React.Component {
                 </ul>
                 <pre style={{ flex: 1, position: 'relative', overflowY: 'auto', overflowX: 'hidden', outline: 'none', color: '#777', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', wordWrap: 'break-word', paddingRight: 100 }}>
                     <div style={{ height: 74 }}></div>
-
-                        {this.state.log}
-
+                    {this.state.log}
                 </pre>
             </div>
         );

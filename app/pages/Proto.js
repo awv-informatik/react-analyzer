@@ -55,7 +55,6 @@ export default class Proto extends React.Component {
     }
 
     render() {
-
         return (
             <div  style={styles.wrapper}>
                 <div ref="container" style={styles.container}>

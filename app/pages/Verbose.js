@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { analyzer } from '../store/store';
+import { analyzer } from '../store/analyzer';
 
 @connect(state => ({ sessions: state.internal.sessions, filter: state.settings.filter, url: state.status.url }))
 export default class Verbose extends React.Component {

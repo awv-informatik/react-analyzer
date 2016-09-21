@@ -1,66 +1,106 @@
-import React from 'react';
-import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import throttle from 'lodash/throttle';
-import SocketIO from 'awv3/communication/socketio';
-import { actions, reducers } from './reducers';
+import { createAction, createReducer } from 'redux-act';
+import { apply as jsonPatch } from 'fast-json-patch';
+import escapeStringRegexp from 'escape-string-regexp';
+import cloneDeep from 'lodash/cloneDeep';
+import { url as getUrl} from 'awv3/core/helpers';
 
-// Expose store and actions
-export const store = createStore(combineReducers(reducers), undefined, window.devToolsExtension && window.devToolsExtension());
+// Action creators
+const setUrl = createAction("SET_URL");
+const setFilter = createAction("SET_FILTER");
+const setEditorText = createAction("SET_EDITOR_TEXT");
+const addLog = createAction("ADD_LOG");
+const addLogs = createAction("ADD_LOGS");
+const setConnected = createAction("SET_CONNECTED");
+const notify = createAction("NOTIFY");
+const patch = createAction("PATCH");
 
-class Analyzer extends SocketIO {
-    constructor() {
-        super({ debug: true, credentials: [] });
-
-        this.messages = [];
-        this.patches = [];
-
-        this.on('connected', (socket, data) => {
-            store.dispatch(actions.patch(data.tree));
-            store.dispatch(actions.setConnected(true));
-            store.dispatch(actions.notify(store.getState().settings.url));
-
-            this.socket.on('debug', data => {
-                SocketIO._ack(this.socket);
-                switch(data.type) {
-                    case 'message':
-                        if (data.message.indexOf("\n") > 0) {
-                            let items = data.message.split("\n")
-                                .filter(item => item.trim().length > 0 && !item.startsWith('Execute'))
-                                .map(item => ({ ...data, message: item }));
-                            this.messages = this.messages.concat(items);
-                        } else {
-                            this.messages.push(data);
-                        }
-                        break;
-                    case 'patch':
-                        this.patches.push(data);
-                        break;
-                }
-                this.update();
-            });
-        });
-
-        this.on('disconnected', socket => {
-            store.dispatch(actions.setConnected(false));
-            this.update();
-        });
-
-        this.on('error', reason => {
-            store.dispatch(actions.setConnected(false));
-            store.dispatch(actions.notify(reason.message))
-            this.update();
-        });
+// Initial application state
+const initialState = {
+    status: {
+        url: getUrl("url") || (document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`),
+        connected: false,
+        message: ""
+    },
+    settings: {
+        template: require("raw!../assets/template.txt"),
+        filter: "",
+        editorText: localStorage.getItem("EDITOR_TEXT")
+    },
+    internal: {
+        stats: {
+            peak: 1,
+            sessions: 0,
+            busy: 0,
+            users: 0,
+            analyzers: 0,
+            queue: 0,
+            graph: new Array(50).fill(0),
+            timestamp: Date.now()
+        }
     }
+};
 
-    update = throttle(() => {
-        this.messages.length > 0 && store.dispatch(actions.addLogs(this.messages));
-        this.patches.length > 0 && this.patches.forEach(patchSet => store.dispatch(actions.patch(patchSet)));
-        this.patches = [];
-        this.messages = [];
-    }, store.getState().internal.stats.queue > 10 ? 500 : 50);
-}
+// Status reducer
+const status = createReducer({
+    [setConnected]: (state, payload) => ({ ...state, connected: payload }),
+    [notify]: (state, payload) => ({ ...state, message: payload }),
+}, initialState.status);
 
-let url = store.getState().status.url;
-export const analyzer = new Analyzer();
-analyzer.connect(url).catch( reason => store.dispatch(actions.notify(reason.message)));
+// Settings reducer
+const settings = createReducer({
+    [setUrl]: (state, payload) => ({ ...state, url: payload }),
+    [setFilter]: (state, payload) => ({ ...state, filter: escapeStringRegexp(payload) }),
+    [setEditorText]: (state, payload) => {
+        localStorage.setItem("EDITOR_TEXT", payload)
+        return { ...state, editorText: payload };
+    }
+}, initialState.settings);
+
+// Internal reducer
+const internal = createReducer({
+    [patch]: (state, payload) => {
+        let stats = state.stats;
+        let graph = stats.graph;
+
+        if (payload.patch) {
+            state = cloneDeep(state);
+            jsonPatch(state, payload.patch);
+        } else {
+            state = payload;
+        }
+
+        let sessions = state.sessions.length;
+        let analyzers = state.analyzers.length;
+        let busy = state.sessions.reduce((prev, cur) => prev + cur.tasks.length, 0);
+        let users = state.users.length;
+        let queue = state.queue.length;
+        let peak = Math.max(stats.peak, queue);
+        if (queue === 0 && peak > 1)
+            peak = peak - 1;
+
+        // Update graph
+        let timestamp = stats.timestamp;
+        let now = Date.now();
+        if (now - timestamp > 1000) {
+            timestamp = now;
+            graph = [ ...stats.graph.slice(-49), queue ];
+        }
+
+        return {
+            ...state,
+            stats: { sessions, busy, users, analyzers, queue, peak, graph, timestamp }
+        };
+    },
+}, initialState.internal);
+
+// Log reducer
+const log = createReducer({
+    [addLog]: (state, payload) => [ ...state, payload ],
+    [addLogs]: (state, payload) => [ ...state, ...payload ]
+}, []);
+
+// Exports
+export const actions = { setUrl, setFilter, setEditorText, addLog, addLogs, setConnected, notify, patch }
+export const reducers = combineReducers({ settings, log,  status, internal });
+export const store = createStore(reducers, undefined, window.devToolsExtension && window.devToolsExtension());

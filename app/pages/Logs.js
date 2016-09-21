@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AutoSizer, VirtualScroll } from 'react-virtualized';
 import LogItem from '../components/LogItem';
-import { actions } from '../store/reducers';
+import { actions } from '../store/store';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Logs extends React.Component {

@@ -7,7 +7,7 @@ import Rest from 'awv3/communication/rest';
 import Editor from '../components/Editor';
 import View from '../components/View';
 
-@connect(state => ({ template: state.settings.templates.javascript, text: state.settings.editorText, url: state.status.url }))
+@connect(state => ({ template: state.settings.template, text: state.settings.editorText, url: state.status.url }))
 export default class Proto extends React.Component {
     static propTypes = { text: React.PropTypes.string, template: React.PropTypes.string }
     static defaultProps = { text: "", template: "" }

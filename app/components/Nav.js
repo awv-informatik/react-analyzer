@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import { actions } from '../store/reducers';
+import { actions } from '../store/store';
 
 @connect()
 export default class Nav extends React.Component {

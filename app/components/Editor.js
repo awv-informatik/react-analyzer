@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import AceEditor from 'react-ace';
 import 'brace/mode/jsx';
 import 'brace/theme/xcode';
-import { actions } from '../store/reducers';
+import { actions } from '../store/store';
 
 @connect()
 export default class Editor extends React.Component {

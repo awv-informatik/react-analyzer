@@ -4,21 +4,6 @@ import escapeStringRegexp from 'escape-string-regexp';
 import cloneDeep from 'lodash/cloneDeep';
 import { url as getUrl} from 'awv3/core/helpers';
 
-function readLocalStorage(key) {
-    let state;
-    // Get state local storage, if any
-    try {
-        state = localStorage.getItem(key);
-    } catch(e) { /* ... */ }
-    return state;
-}
-
-function writeLocalStorage(key, value) {
-    try {
-        localStorage.setItem(key, value);
-    } catch(e) { /* ... */ }
-}
-
 const setUrl = createAction("SET_URL");
 const setFilter = createAction("SET_FILTER");
 const setEditorText = createAction("SET_EDITOR_TEXT");
@@ -41,7 +26,7 @@ const settings = createReducer({
     [setUrl]: (state, payload) => ({ ...state, url: payload }),
     [setFilter]: (state, payload) => ({ ...state, filter: escapeStringRegexp(payload) }),
     [setEditorText]: (state, payload) => {
-        writeLocalStorage("EDITOR_TEXT", payload)
+        localStorage.setItem("EDITOR_TEXT", payload)
         return { ...state, editorText: payload };
     }
 }, {
@@ -49,7 +34,7 @@ const settings = createReducer({
         javascript: require("raw!../assets/template.txt")
     },
     filter: "",
-    editorText: readLocalStorage("EDITOR_TEXT")
+    editorText: localStorage.getItem("EDITOR_TEXT")
 });
 
 const internal = createReducer({

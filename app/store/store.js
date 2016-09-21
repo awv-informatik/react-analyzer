@@ -43,17 +43,17 @@ const initialState = {
 
 // Status reducer
 const status = createReducer({
-    [setConnected]: (state, payload) => ({ ...state, connected: payload }),
-    [notify]: (state, payload) => ({ ...state, message: payload }),
+    [setConnected]: (state, connected) => ({ ...state, connected }),
+    [notify]: (state, message) => ({ ...state, message }),
 }, initialState.status);
 
 // Settings reducer
 const settings = createReducer({
-    [setUrl]: (state, payload) => ({ ...state, url: payload }),
+    [setUrl]: (state, url) => ({ ...state, url }),
     [setFilter]: (state, payload) => ({ ...state, filter: escapeStringRegexp(payload) }),
-    [setEditorText]: (state, payload) => {
-        localStorage.setItem("EDITOR_TEXT", payload)
-        return { ...state, editorText: payload };
+    [setEditorText]: (state, editorText) => {
+        localStorage.setItem("EDITOR_TEXT", editorText)
+        return { ...state, editorText };
     }
 }, initialState.settings);
 

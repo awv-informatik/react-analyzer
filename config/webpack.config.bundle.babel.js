@@ -6,8 +6,6 @@ const production = process.env.NODE_ENV === 'production';
 
 module.exports = {
     entry: [
-        "babel-polyfill",
-        "babel-standalone",
         "./app/routes.js",
         "./app/assets/site.styl"
     ],
@@ -30,7 +28,7 @@ module.exports = {
         new webpack.optimize.OccurrenceOrderPlugin(true),
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }, mangle: true }),
-        new HtmlWebpackPlugin({ filename: './build/bundle.html', inject: false, template: './config/template-bundle.jade' })
+        new HtmlWebpackPlugin({ title: "awv3node", filename: './build/bundle.html', inject: false, template: './config/template-bundle.jade' })
     ],
     cache: true,
     debug: false

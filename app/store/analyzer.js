@@ -1,6 +1,6 @@
 import throttle from 'lodash/throttle';
 import SocketIO from 'awv3/communication/socketio';
-import { store, actions } from './store';
+import { store, actions } from '../store/store';
 
 class Analyzer extends SocketIO {
     constructor() {

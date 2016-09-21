@@ -130,7 +130,7 @@ try {
 } catch(e) { /* ... */ }
 
 // Expose store and actions
-export const store = createStore(combineReducers({ settings, log, status, internal, routing }), localState);
+export const store = createStore(combineReducers({ settings, log, status, internal, routing }), localState, window.devToolsExtension && window.devToolsExtension());
 
 export const setUrl = url => ({ type: SET_URL, url });
 export const setEditorText = editorText => ({ type: SET_EDITOR_TEXT, editorText });

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import AceEditor from 'react-ace';
 import 'brace/mode/jsx';
 import 'brace/theme/xcode';
+import { actions } from '../store/reducers';
 
 @connect()
 export default class Editor extends React.Component {
@@ -25,7 +26,7 @@ export default class Editor extends React.Component {
 
                 // Get code from editor and compile using eval
                 let value = this.refs.ace.editor.getValue();
-                this.props.dispatch({ type: "SET_EDITOR_TEXT", editorText: value });
+                this.props.dispatch(actions.setEditorText(value));
 
                 // When Babel is available, let's translate the code
                 if (typeof Babel !== 'undefined') {
@@ -36,7 +37,7 @@ export default class Editor extends React.Component {
                 // Evaluate code and notify
                 let promise = eval(value);
                 this.notify({ error: false, label: "compiled successfully", icon: "large check icon", color: "#11cc77" });
-                this.props.onSaved && this.props.onSaved();
+                this.props.onSaved && this.props.onSaved(value);
 
                 // Await promise so it can be catched
                 await promise;

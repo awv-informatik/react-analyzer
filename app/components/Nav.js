@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+import { actions } from '../store/reducers';
 
 @connect()
 export default class Nav extends React.Component {
@@ -13,7 +14,7 @@ export default class Nav extends React.Component {
                     </h1>
                     <div className="ui icon input" style={{ marginBottom: 20 }}>
                         <input type="text" placeholder="Search..." value={this.props.filter} onChange={e =>
-                            this.props.dispatch({ type: 'SET_FILTER', filter: e.target.value })}/>
+                            this.props.dispatch(actions.setFilter(e.target.value))}/>
                         <i className="search icon"></i>
                     </div>
                     <div className="ui secondary vertical menu">

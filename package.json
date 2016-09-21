@@ -65,6 +65,7 @@
     "react-virtualized": "^7.24.1",
     "rebass": "^0.3.1",
     "redux": "^3.6.0",
+    "redux-act": "^1.0.0",
     "semantic-ui-css": "^2.2.4"
   }
 }

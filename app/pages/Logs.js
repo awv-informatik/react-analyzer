@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AutoSizer, VirtualScroll } from 'react-virtualized';
 import LogItem from '../components/LogItem';
+import { actions } from '../store/reducers';
 
 @connect(state => ({ log: state.log, filter: state.settings.filter }))
 export default class Logs extends React.Component {
@@ -9,7 +10,7 @@ export default class Logs extends React.Component {
     static defaultProps = { wrap: false }
 
     setFilter = (filter) =>
-        this.props.dispatch({ type: 'SET_FILTER', filter });
+        this.props.dispatch(actions.setFilter(filter));
 
     render() {
 

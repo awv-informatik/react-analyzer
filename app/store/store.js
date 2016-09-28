@@ -3,63 +3,50 @@ import { createAction, createReducer } from 'redux-act';
 import { apply as jsonPatch } from 'fast-json-patch';
 import escapeStringRegexp from 'escape-string-regexp';
 import cloneDeep from 'lodash/cloneDeep';
-import { url as getUrl} from 'awv3/core/helpers';
+import initialState from '../store/initial.js';
 
-// Action creators
-const setUrl = createAction("SET_URL");
-const setFilter = createAction("SET_FILTER");
-const setEditorText = createAction("SET_EDITOR_TEXT");
-const addLog = createAction("ADD_LOG");
-const addLogs = createAction("ADD_LOGS");
-const setConnected = createAction("SET_CONNECTED");
-const notify = createAction("NOTIFY");
-const patch = createAction("PATCH");
-
-// Initial application state
-const initialState = {
-    status: {
-        url: getUrl("url") || (document.location.hostname == 'localhost' ? 'http://localhost:8181' : `${window.location.protocol}//${document.location.hostname}`),
-        connected: false,
-        message: ""
-    },
-    settings: {
-        template: require("raw!../assets/template.txt"),
-        filter: "",
-        editorText: localStorage.getItem("EDITOR_TEXT")
-    },
-    internal: {
-        stats: {
-            peak: 1,
-            sessions: 0,
-            busy: 0,
-            users: 0,
-            analyzers: 0,
-            queue: 0,
-            graph: new Array(50).fill(0),
-            timestamp: Date.now()
-        }
-    }
+// Export actions
+export const actions = {
+    setUrl: createAction("SET_URL"),
+    setFilter: createAction("SET_FILTER"),
+    setEditorText: createAction("SET_EDITOR_TEXT"),
+    resetEditorText: createAction("RESET_EDITOR_TEXT"),
+    addLog: createAction("ADD_LOG"),
+    addLogs: createAction("ADD_LOGS"),
+    setConnected: createAction("SET_CONNECTED"),
+    notify: createAction("NOTIFY"),
+    patch: createAction("PATCH")
 };
 
 // Status reducer
 const status = createReducer({
-    [setConnected]: (state, connected) => ({ ...state, connected }),
-    [notify]: (state, message) => ({ ...state, message }),
+    [actions.setConnected]: (state, connected) => ({ ...state, connected }),
+    [actions.notify]: (state, message) => ({ ...state, message }),
 }, initialState.status);
 
 // Settings reducer
 const settings = createReducer({
-    [setUrl]: (state, url) => ({ ...state, url }),
-    [setFilter]: (state, payload) => ({ ...state, filter: escapeStringRegexp(payload) }),
-    [setEditorText]: (state, editorText) => {
+    [actions.setUrl]: (state, url) => ({ ...state, url }),
+    [actions.setFilter]: (state, payload) => ({ ...state, filter: escapeStringRegexp(payload) }),
+    [actions.setEditorText]: (state, editorText) => {
         localStorage.setItem("EDITOR_TEXT", editorText)
         return { ...state, editorText };
+    },
+    [actions.resetEditorText]: (state) => {
+        localStorage.setItem("EDITOR_TEXT", state.template)
+        return { ...state, editorText: state.template };
     }
 }, initialState.settings);
 
+// Log reducer
+const log = createReducer({
+    [actions.addLog]: (state, payload) => [ ...state, payload ],
+    [actions.addLogs]: (state, payload) => [ ...state, ...payload ]
+}, []);
+
 // Internal reducer
 const internal = createReducer({
-    [patch]: (state, payload) => {
+    [actions.patch]: (state, payload) => {
         let stats = state.stats;
         let graph = stats.graph;
 
@@ -94,13 +81,5 @@ const internal = createReducer({
     },
 }, initialState.internal);
 
-// Log reducer
-const log = createReducer({
-    [addLog]: (state, payload) => [ ...state, payload ],
-    [addLogs]: (state, payload) => [ ...state, ...payload ]
-}, []);
-
-// Exports
-export const actions = { setUrl, setFilter, setEditorText, addLog, addLogs, setConnected, notify, patch }
 export const reducers = combineReducers({ settings, log,  status, internal });
 export const store = createStore(reducers, undefined, window.devToolsExtension && window.devToolsExtension());

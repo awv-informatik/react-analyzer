@@ -7,7 +7,7 @@ import { actions } from '../store/store';
 
 @connect()
 export default class Editor extends React.Component {
-    state = { label: "[ CTRL - S ] to compile", icon: "large info icon", color: "#64a8db", error: false }
+    state = { label: "[ CTRL - S ] to compile, [ CTRL - R ] to reset", icon: "large info icon", color: "#64a8db", error: false }
 
     componentDidMount() {
         window.addEventListener("keydown", this.listen);
@@ -19,6 +19,7 @@ export default class Editor extends React.Component {
 
     listen = async (event) => {
         if (event.ctrlKey && event.keyCode == 83) {
+            // CTRL-S
             event.preventDefault();
 
             let timeout;
@@ -45,6 +46,10 @@ export default class Editor extends React.Component {
             } catch (reason) {
                 this.notify({ error: true, label: reason.message, icon: "large remove icon", color: "#D81B60" }, 4000);
             }
+        } else if (event.ctrlKey && event.keyCode == 82) {
+            // CTRL-R
+            event.preventDefault();
+            this.props.dispatch(actions.resetEditorText());
         }
     }
 
@@ -58,7 +63,6 @@ export default class Editor extends React.Component {
     render() {
         return (
             <div style={styles.editor}>
-
                 <AceEditor
                     ref="ace" name="randomname" mode="jsx" theme="xcode"
                     editorProps={{ $blockScrolling: true }}

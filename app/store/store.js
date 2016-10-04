@@ -13,6 +13,7 @@ export const actions = {
     resetEditorText: createAction("RESET_EDITOR_TEXT"),
     addLog: createAction("ADD_LOG"),
     addLogs: createAction("ADD_LOGS"),
+    setVerbose: createAction("SET_VERBOSE"),
     setConnected: createAction("SET_CONNECTED"),
     notify: createAction("NOTIFY"),
     patch: createAction("PATCH")
@@ -40,9 +41,10 @@ const settings = createReducer({
 
 // Log reducer
 const log = createReducer({
-    [actions.addLog]: (state, payload) => [ ...state, payload ],
-    [actions.addLogs]: (state, payload) => [ ...state, ...payload ]
-}, []);
+    [actions.setVerbose]: (state, verbose) => ({ ...state, verbose }),
+    [actions.addLog]: (state, log) => ({ ...state, actions: [...state.actions, log ]}),
+    [actions.addLogs]: (state, logs) => ({ ...state, actions: [...state.actions, ...logs ]})
+}, initialState.log);
 
 // Internal reducer
 const internal = createReducer({

@@ -8,7 +8,7 @@ import LogItem from '../components/LogItem';
     sessions: state.internal.stats.sessions,
     users: state.internal.stats.users,
     peak: state.internal.stats.peak,
-    log: state.log
+    log: state.log.actions
 }))
 export default class Footer extends React.Component {
     render() {

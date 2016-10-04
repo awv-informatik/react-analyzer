@@ -22,5 +22,9 @@ export default {
             graph: new Array(50).fill(0),
             timestamp: Date.now()
         }
+    },
+    log: {
+        verbose: "",
+        actions: []
     }
 };

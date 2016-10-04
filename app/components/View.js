@@ -1,7 +1,7 @@
 import React from 'react';
 import Canvas from '../components/awv3/Canvas';
 import View from '../components/awv3/View';
-import JSONTree from 'react-json-tree'
+import JSONTree from 'react-json-tree';
 
 export default class ViewImpl extends React.Component {
     state = { resultsUp: false }

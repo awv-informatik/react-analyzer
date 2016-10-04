@@ -3,9 +3,10 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { actions } from '../store/store';
 
-@connect()
+@connect(state => ({ sessions: state.internal.sessions }))
 export default class Nav extends React.Component {
     render() {
+        let sessions = this.props.sessions || [];
         return (
             <nav style={styles.nav}>
                 <div style={styles.wrapper}>
@@ -21,7 +22,18 @@ export default class Nav extends React.Component {
                         <Link to="/overview" className="item" activeClassName="active blue">Overview</Link>
                         <Link to="/logs" className="item" activeClassName="active blue">Logs</Link>
                         <Link to="/proto" className="item" activeClassName="active blue">Prototyping</Link>
-                        <Link to="/verbose" className="item" activeClassName="active blue">Verbose</Link>
+
+                        <div className="ui simple dropdown item">
+                            Verbose <i className="dropdown icon"></i>
+                            <div className="menu" style={{ left: 0, width: '100%' }}>
+                            {sessions.map(session => (
+                                <Link key={session.id} to={`/verbose/${session.id}`} className="item logitem" activeClassName="active">
+                                    {session.id}
+                                </Link>
+                            ))}
+                          </div>
+                        </div>
+
                     </div>
                 </div>
             </nav>

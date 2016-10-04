@@ -17,7 +17,7 @@ ReactDOM.render((
                 <Route path="/overview" component={Overview} />
                 <Route path="/logs" component={Logs} />
                 <Route path="/proto" component={Proto} />
-                <Route path="/verbose" component={Verbose} />
+                <Route path="/verbose/:id" component={Verbose} />
             </Route>
         </Router>
     </Provider>
